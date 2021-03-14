@@ -9,6 +9,7 @@ import Badge from '@material-ui/core/Badge';
 import MenuItem from '@material-ui/core/MenuItem';
 import Menu from '@material-ui/core/Menu';
 import MenuIcon from '@material-ui/icons/Menu';
+import AddIcon from '@material-ui/icons/Add';
 import HomeIcon from '@material-ui/icons/Home';
 import SearchIcon from '@material-ui/icons/Search';
 import AccountCircle from '@material-ui/icons/AccountCircle';
@@ -134,12 +135,18 @@ export default function PrimarySearchAppBar() {
             onClose={handleMobileMenuClose}
         >
             <MenuItem>
+                <IconButton aria-label="add" color="inherit">
+                    <AddIcon />
+                </IconButton>
+                <p>Add</p>
+            </MenuItem>
+            <MenuItem>
                 <IconButton aria-label="show 4 new mails" color="inherit">
                     <Badge badgeContent={4} color="secondary">
                         <HomeIcon />
                     </Badge>
                 </IconButton>
-                <p>Messages</p>
+                <p>Home</p>
             </MenuItem>
             <MenuItem>
                 <IconButton aria-label="show 11 new notifications" color="inherit">
@@ -147,7 +154,7 @@ export default function PrimarySearchAppBar() {
                         <SendIcon />
                     </Badge>
                 </IconButton>
-                <p>Notifications</p>
+                <p>Messages</p>
             </MenuItem>
             <MenuItem onClick={handleProfileMenuOpen}>
                 <IconButton
@@ -192,6 +199,9 @@ export default function PrimarySearchAppBar() {
                     </div>
                     <div className={classes.grow} />
                     <div className={classes.sectionDesktop}>
+                        <IconButton aria-label="add" color="inherit">
+                            <AddIcon />
+                        </IconButton>
                         <IconButton aria-label="show 4 new mails" color="inherit">
                             <Badge badgeContent={4} color="secondary">
                                 <HomeIcon />
