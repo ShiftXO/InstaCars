@@ -12,9 +12,7 @@ const { json } = require('express');
 router.post('/login', async (req, res, next) => {
     try {
         let result = await authService.login(req.body);
-        console.log(result);
-        res.json({ 'session-token': result })
-        return json({ 'session-token': result })
+        res.status(200).json({ result });
     } catch (error) {
         console.log(error);
         return json(error);

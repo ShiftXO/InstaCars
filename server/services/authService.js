@@ -28,8 +28,13 @@ const login = async (data) => {
 
     let token = jwt.sign({ _id: user._id, username: user.username }, SECRET, { expiresIn: '1h' })
     //let token = jwt.sign({ _id: user._id, email: user.email }, SECRET)
+    let result = {
+        _id: user._id,
+        username: user.username,
+        token
+    }
 
-    return token;
+    return result;
 };
 
 const getUserById = async (id) => {

@@ -67,8 +67,8 @@ export default function SignInSide() {
         e.preventDefault();
         console.log(email);
         console.log(password);
-        let res = await authService.login({ email, password });
-        console.log(res);
+        let token = await authService.login({ email, password });
+        sessionStorage.setItem('session', JSON.stringify(token));
     }
 
     return (
