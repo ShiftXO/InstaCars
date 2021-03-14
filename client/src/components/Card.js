@@ -26,6 +26,7 @@ import Comment from "./Comment";
 const useStyles = makeStyles((theme) => ({
     root: {
         maxWidth: 640,
+        marginBottom: "30px"
     },
     cardHeader: {
         padding: '10px 10px',
