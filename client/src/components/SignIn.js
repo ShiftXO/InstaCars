@@ -68,7 +68,8 @@ export default function SignInSide() {
         console.log(email);
         console.log(password);
         let token = await authService.login({ email, password });
-        sessionStorage.setItem('session', JSON.stringify(token));
+        console.log(token);
+        sessionStorage.setItem('session', JSON.stringify(token.result));
     }
 
     return (
@@ -122,12 +123,12 @@ export default function SignInSide() {
                             className={classes.submit}
                         >
                             Sign In
-            </Button>
+                        </Button>
                         <Grid container>
                             <Grid item xs>
                                 <Link href="#" variant="body2">
                                     Forgot password?
-                </Link>
+                                </Link>
                             </Grid>
                             <Grid item>
                                 <Link href="#" variant="body2">

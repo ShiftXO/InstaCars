@@ -1,16 +1,17 @@
 const jwt = require('jsonwebtoken');
+const config = require('../config/index');
 
 function auth(req, res, next) {
-    let authorizationHeader = req.get('Authorization');
+    let authorizationHeader = req.get('session');
     if (authorizationHeader) {
-        let token = authorizationHeader.split(' ')[1];
+        let token = authorizationHeader.replace('\"', '');
+        token = token.replace('\"', '');
 
         try {
-            let decoded = jwt.verify(token, 'SOMESUPERSECRET');
-
+            let decoded = jwt.verify(token, config.SECRET);
             req.user = decoded;
         } catch (error) {
-            return next();
+            return res.status(401).json({ errorData: { message: 'You cannot perform this action!' } });
         }
     }
 

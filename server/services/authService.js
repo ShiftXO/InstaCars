@@ -34,7 +34,7 @@ const login = async (data) => {
         token
     }
 
-    return result;
+    return token;
 };
 
 const getUserById = async (id) => {
