@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { fade, makeStyles } from '@material-ui/core/styles';
 import AppBar from '@material-ui/core/AppBar';
 import Toolbar from '@material-ui/core/Toolbar';
@@ -15,8 +15,11 @@ import SearchIcon from '@material-ui/icons/Search';
 import AccountCircle from '@material-ui/icons/AccountCircle';
 import MailIcon from '@material-ui/icons/Mail';
 import SendIcon from '@material-ui/icons/Send';
-
 import MoreIcon from '@material-ui/icons/MoreVert';
+
+import { Link } from 'react-router-dom'
+
+import Create from "./Create";
 
 const useStyles = makeStyles((theme) => ({
     grow: {
@@ -87,6 +90,9 @@ export default function PrimarySearchAppBar() {
     const [anchorEl, setAnchorEl] = React.useState(null);
     const [mobileMoreAnchorEl, setMobileMoreAnchorEl] = React.useState(null);
 
+    const [open, setOpen] = useState(false);
+
+
     const isMenuOpen = Boolean(anchorEl);
     const isMobileMenuOpen = Boolean(mobileMoreAnchorEl);
 
@@ -105,6 +111,14 @@ export default function PrimarySearchAppBar() {
 
     const handleMobileMenuOpen = (event) => {
         setMobileMoreAnchorEl(event.currentTarget);
+    };
+
+    const handleOpen = () => {
+        setOpen(true);
+    };
+
+    const handleClose = () => {
+        setOpen(false);
     };
 
     const menuId = 'primary-search-account-menu';
@@ -135,7 +149,7 @@ export default function PrimarySearchAppBar() {
             onClose={handleMobileMenuClose}
         >
             <MenuItem>
-                <IconButton aria-label="add" color="inherit">
+                <IconButton aria-label="add" color="inherit" onClick={handleOpen}>
                     <AddIcon />
                 </IconButton>
                 <p>Add</p>
@@ -172,6 +186,7 @@ export default function PrimarySearchAppBar() {
 
     return (
         <div className={classes.grow}>
+            <Create handleOpen={handleOpen} handleClose={handleClose} open={open} />
             <AppBar position="fixed">
                 <Toolbar>
                     <IconButton
@@ -199,7 +214,7 @@ export default function PrimarySearchAppBar() {
                     </div>
                     <div className={classes.grow} />
                     <div className={classes.sectionDesktop}>
-                        <IconButton aria-label="add" color="inherit">
+                        <IconButton aria-label="add" color="inherit" onClick={handleOpen}>
                             <AddIcon />
                         </IconButton>
                         <IconButton aria-label="show 4 new mails" color="inherit">
