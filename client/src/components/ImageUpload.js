@@ -1,14 +1,14 @@
 import React from "react";
+
 import Card from "@material-ui/core/Card";
 import CardActionArea from "@material-ui/core/CardActionArea";
 import CardContent from "@material-ui/core/CardContent";
 import Fab from "@material-ui/core/Fab";
 import Grid from "@material-ui/core/Grid";
 import blue from "@material-ui/core/colors/blue";
+import { withStyles } from "@material-ui/core/styles";
 
 import AddPhotoAlternateIcon from "@material-ui/icons/AddPhotoAlternate";
-
-import { withStyles } from "@material-ui/core/styles";
 
 const styles = theme => ({
     root: {
@@ -28,15 +28,22 @@ const styles = theme => ({
 });
 
 class ImageUploadCard extends React.Component {
-    state = {
-        mainState: "initial", // initial, search, gallery, uploaded
-        imageUploaded: 0,
-        selectedFile: null
+    constructor(props) {
+        super(props);
+        this.state = {
+            mainState: "initial", // initial, uploaded
+            imageUploaded: 0,
+            selectedFile: null,
+            file: null,
+        }
     };
 
     handleUploadClick = event => {
-        console.log();
         var file = event.target.files[0];
+        console.log(file);
+        this.props.setFile({
+            file
+        })
         const reader = new FileReader();
         var url = reader.readAsDataURL(file);
 
@@ -45,13 +52,14 @@ class ImageUploadCard extends React.Component {
                 selectedFile: [reader.result]
             });
         }.bind(this);
-        console.log(url); // Would see a path?
 
         this.setState({
             mainState: "uploaded",
             selectedFile: event.target.files[0],
-            imageUploaded: 1
+            imageUploaded: 1,
+            file: reader.result
         });
+        this.props.setFile(event.target.files[0]);
     };
 
     renderInitialState() {
@@ -66,8 +74,9 @@ class ImageUploadCard extends React.Component {
                             accept="image/*"
                             className={classes.input}
                             id="contained-button-file"
-                            multiple
                             type="file"
+                            name="file"
+                            value={this.selectedFile}
                             onChange={this.handleUploadClick}
                         />
                         <label htmlFor="contained-button-file">
@@ -80,6 +89,7 @@ class ImageUploadCard extends React.Component {
             </React.Fragment>
         );
     }
+
     renderUploadedState() {
         const { classes, theme } = this.props;
 
