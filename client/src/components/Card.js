@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { makeStyles } from '@material-ui/core/styles';
 import clsx from 'clsx';
 import Card from '@material-ui/core/Card';
@@ -23,8 +23,11 @@ import { Button, Container, Grid, Link } from '@material-ui/core';
 import UserComment from './UserComment';
 import Comment from "./Comment";
 
+import postService from "../services/postService";
+
 const useStyles = makeStyles((theme) => ({
     root: {
+        width: 640,
         maxWidth: 640,
         marginBottom: "30px"
     },
@@ -52,72 +55,78 @@ const useStyles = makeStyles((theme) => ({
 
 export default function RecipeReviewCard() {
     const classes = useStyles();
+    const [posts, setPosts] = useState([]);
+
     const [expanded, setExpanded] = useState(false);
 
     const handleExpandClick = () => {
         setExpanded(!expanded);
     };
 
+    useEffect(async () => {
+        const fetchData = async () => {
+            const data = await postService.getAll();
+            setPosts(data.result);
+        };
+
+        fetchData();
+    }, [])
+
     return (
-        <Card className={classes.root}>
-            <CardHeader className={classes.cardHeader}
-                avatar={
-                    <Avatar aria-label="recipe" className={classes.avatar}>
-                        R
-                     </Avatar>
-                }
-                action={
-                    <IconButton aria-label="settings">
-                        <MoreVertIcon />
-                    </IconButton>
-                }
-                title={
-                    <Link href="google.com">
-                        <Typography color="inherit">user profile</Typography>
-                    </Link>
-                }
-            />
-            <CardMedia
-                className={classes.media}
-                image="https://www.focus2move.com/wp-content/uploads/2020/01/Tesla-Roadster-2020-1024-03.jpg"
-            />
+        <div>
+            {posts.map(x =>
+                <Card key={x._id} className={classes.root}>
+                    <CardHeader className={classes.cardHeader}
+                        avatar={
+                            <Avatar aria-label="recipe" className={classes.avatar}>R</Avatar>
+                        }
+                        action={
+                            <IconButton aria-label="settings">
+                                <MoreVertIcon />
+                            </IconButton>
+                        }
+                        title={
+                            <Link href="google.com">
+                                <Typography color="inherit">{x.owner}</Typography>
+                            </Link>
+                        }
+                    />
+                    <CardMedia className={classes.media} image={x.imageUrl} />
 
-            <CardContent>
-                <Typography component="span">Username </Typography>
-                <Typography variant="body2" color="textSecondary" component="span">
-                    This impressive paella is a perfect party dish and a fun meal to cook together with your
-                    guests. Add 1 cup of frozen peas along with the mussels, if you like.
-                </Typography>
-                <Typography>Show more</Typography>
-            </CardContent>
+                    <CardContent>
+                        <Typography component="span">{x._id}</Typography>
+                        <Typography variant="body2" color="textSecondary" component="span">{x.description}</Typography>
+                        <Typography>Show more</Typography>
+                    </CardContent>
 
-            <CardActions disableSpacing>
-                <IconButton aria-label="like">
-                    <Typography variant="p">12</Typography>
-                    <FavoriteBorderIcon />
-                </IconButton>
-                <IconButton aria-label="send">
-                    <SendIcon />
-                </IconButton>
-                <IconButton aria-label="save">
-                    <BookmarkBorder />
-                </IconButton>
-                <IconButton
-                    className={clsx(classes.expand, {
-                        [classes.expandOpen]: expanded,
-                    })}
-                    onClick={handleExpandClick}
-                    aria-expanded={expanded}
-                    aria-label="show more"
-                >
-                </IconButton>
-            </CardActions>
-            <UserComment></UserComment>
-            <UserComment></UserComment>
+                    <CardActions disableSpacing>
+                        <IconButton aria-label="like" >
+                            <Typography>{x.usersLiked.lenght}</Typography>
+                            <FavoriteBorderIcon />
+                        </IconButton>
+                        <IconButton aria-label="send">
+                            <SendIcon />
+                        </IconButton>
+                        <IconButton aria-label="save">
+                            <BookmarkBorder />
+                        </IconButton>
+                        <IconButton
+                            className={clsx(classes.expand, {
+                                [classes.expandOpen]: expanded,
+                            })}
+                            onClick={handleExpandClick}
+                            aria-expanded={expanded}
+                            aria-label="show more"
+                        >
+                        </IconButton>
+                    </CardActions>
+                    <UserComment></UserComment>
+                    <UserComment></UserComment>
 
-            <Typography style={{ color: "gray", margin: "10px 20px" }}>1 min</Typography>
-            <Comment></Comment>
-        </Card>
-
+                    <Typography style={{ color: "gray", margin: "10px 20px" }}>1 min</Typography>
+                    <Comment></Comment>
+                </Card>
+            )}
+        </div>
     );
 }
