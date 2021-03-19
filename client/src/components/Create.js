@@ -77,6 +77,7 @@ export default function TransitionsModal(props) {
         if (imageUrl && result._id) {
             setLoading(false);
             setIsSubmited(false);
+            setDescription('');
             props.handleClose();
         }
     }
