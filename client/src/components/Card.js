@@ -63,9 +63,20 @@ export default function RecipeReviewCard() {
         setExpanded(!expanded);
     };
 
-    useEffect(async () => {
+    const handleLike = async (_id) => {
+        let userId = localStorage.getItem('_id');
+        let data = {
+            _id: _id,
+            userId: userId
+        };
+        let res = await postService.like(data);
+        console.log(res);
+    };
+
+    useEffect(() => {
         const fetchData = async () => {
             const data = await postService.getAll();
+            console.log(data.result);
             setPosts(data.result);
         };
 
@@ -75,10 +86,10 @@ export default function RecipeReviewCard() {
     return (
         <div>
             {posts.map(x =>
-                <Card key={x._id} className={classes.root}>
+                <Card key={x._id} className={classes.root} >
                     <CardHeader className={classes.cardHeader}
                         avatar={
-                            <Avatar aria-label="recipe" className={classes.avatar}>R</Avatar>
+                            <Avatar aria-label="recipe" className={classes.avatar} src={x.imageUrl} />
                         }
                         action={
                             <IconButton aria-label="settings">
@@ -91,7 +102,8 @@ export default function RecipeReviewCard() {
                             </Link>
                         }
                     />
-                    <CardMedia className={classes.media} image={x.imageUrl} />
+
+                    <CardMedia className={classes.media} image={x.imageUrl} onDoubleClick={() => handleLike(x._id)} />
 
                     <CardContent>
                         <Typography component="span">{x._id}</Typography>
@@ -100,9 +112,9 @@ export default function RecipeReviewCard() {
                     </CardContent>
 
                     <CardActions disableSpacing>
-                        <IconButton aria-label="like" >
-                            <Typography>{x.usersLiked.lenght}</Typography>
-                            <FavoriteBorderIcon />
+                        <IconButton aria-label="like" color="secondary" onClick={() => handleLike(x._id)} >
+                            <Typography>{x.usersLiked.length > 0 ? x.usersLiked.length : ''}</Typography>
+                            <FavoriteIcon />
                         </IconButton>
                         <IconButton aria-label="send">
                             <SendIcon />

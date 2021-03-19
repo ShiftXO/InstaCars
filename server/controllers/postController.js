@@ -23,5 +23,14 @@ router.get('/all', auth, async (req, res, next) => {
     }
 });
 
+router.post('/:_id/like', auth, async (req, res, next) => {
+    try {
+        let result = await postService.likePost(req.body);
+        console.log(result);
+        res.status(200).json({ result });
+    } catch (error) {
+        return res.status(400).json(error);
+    }
+});
 
 module.exports = router;
