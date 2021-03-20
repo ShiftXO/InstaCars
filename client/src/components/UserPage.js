@@ -26,11 +26,18 @@ const useStyles = makeStyles((theme) => ({
         width: 293,
         height: 293
     },
+    imageContainer: {
+        width: "935px",
+        margin: "auto"
+    },
     image: {
         "&:hover": {
             opacity: 0.25
         },
-        width: 293
+        width: 295,
+        height: 295,
+        objectFit: "cover",
+        cursor: "pointer"
     },
     large: {
         width: theme.spacing(20),
@@ -76,6 +83,21 @@ export default function UserPage() {
                 </Grid>
             </Grid>
             <Divider component="hr" variant="fullWidth" />
+
+            <Grid className={classes.imageContainer} container >
+                <Grid item xs={4} >
+                    <img className={classes.image} src="https://upload.wikimedia.org/wikipedia/commons/f/fa/Billie_Eilish_2019_by_Glenn_Francis_%28cropped%29_2.jpg" />
+                </Grid>
+                <Grid item xs={4} >
+                    <img className={classes.image} src="https://upload.wikimedia.org/wikipedia/commons/f/fa/Billie_Eilish_2019_by_Glenn_Francis_%28cropped%29_2.jpg" />
+                </Grid>
+                <Grid item xs={4} >
+                    <img className={classes.image} src="https://upload.wikimedia.org/wikipedia/commons/f/fa/Billie_Eilish_2019_by_Glenn_Francis_%28cropped%29_2.jpg" />
+                </Grid>
+                <Grid item xs={4} >
+                    <img className={classes.image} src="https://upload.wikimedia.org/wikipedia/commons/f/fa/Billie_Eilish_2019_by_Glenn_Francis_%28cropped%29_2.jpg" />
+                </Grid>
+            </Grid>
         </>
     );
 }
