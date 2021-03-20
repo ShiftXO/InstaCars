@@ -35,9 +35,7 @@ const useStyles = makeStyles((theme) => ({
         display: 'none',
     },
     spiner: {
-        alignContent: 'center',
-        alignItems: 'center',
-        display: 'inline-block'
+        textAlign: 'center',
     },
     successIcon: {
         color: "green"
