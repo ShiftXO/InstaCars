@@ -149,7 +149,7 @@ export default function RecipeReviewCard() {
                     <UserComment></UserComment>
 
                     <Typography style={{ color: "gray", margin: "10px 20px" }}>1 min</Typography>
-                    <Comment></Comment>
+                    <Comment postId={x._id} />
                 </Card>
             )
             }
