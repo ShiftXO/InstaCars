@@ -17,10 +17,11 @@ const create = async (data) => {
 
 const getAll = async (data) => {
     const { imageUrl, userId, description } = data;
-
     //TODO get user followers posts
+    let posts = await Post.find().populate({ path: 'owner', select: 'username' }).lean();
+    console.log(posts);
 
-    return await Post.find().lean();
+    return posts;
 };
 
 const likePost = async (data) => {
