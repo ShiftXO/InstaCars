@@ -40,7 +40,9 @@ const login = async (data) => {
 };
 
 const getUserById = async (id) => {
-    return await User.findById(id).lean();
+    let data = await User.findOne({ _id: id }).populate({ path: 'posts', select: 'imageUrl' }).select('username followers following posts bio profileImage').lean();
+    console.log(data);
+    return data;
 };
 
 const getUsername = async (_id) => {
