@@ -74,6 +74,16 @@ export default function RecipeReviewCard() {
         console.log(res);
     };
 
+    const handleSave = async (_id) => {
+        let userId = localStorage.getItem('_id');
+        let data = {
+            _id: _id,
+            userId: userId
+        };
+        let res = await postService.save(data);
+        console.log(res);
+    };
+
     useEffect(() => {
         const fetchData = async () => {
             const data = await postService.getAll();
@@ -122,7 +132,7 @@ export default function RecipeReviewCard() {
                         <IconButton aria-label="send">
                             <SendIcon />
                         </IconButton>
-                        <IconButton aria-label="save">
+                        <IconButton aria-label="save" onClick={() => handleSave(x._id)}>
                             <BookmarkBorder />
                         </IconButton>
                         <IconButton

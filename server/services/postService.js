@@ -40,8 +40,25 @@ const likePost = async (data) => {
     return await post.save();
 };
 
+const savePost = async (data) => {
+    const { _id, userId } = data;
+
+    const user = await User.findOne({ _id: userId });
+    const post = await Post.findOne({ _id });
+
+    let isSaved = user.savedPosts.some(x => x._id == _id);
+    if (isSaved) {
+        await user.savedPosts.remove(post);
+        return await user.save();
+    }
+
+    user.savedPosts.push(post);
+    return await user.save();
+};
+
 module.exports = {
     getAll,
     create,
+    savePost,
     likePost,
 };
