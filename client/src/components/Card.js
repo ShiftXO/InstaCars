@@ -145,10 +145,12 @@ export default function RecipeReviewCard() {
                         >
                         </IconButton>
                     </CardActions>
-                    <UserComment></UserComment>
-                    <UserComment></UserComment>
 
-                    <Typography style={{ color: "gray", margin: "10px 20px" }}>1 min</Typography>
+                    {x.comments.map(comment =>
+                        <UserComment key={comment._id} content={comment.content} username={comment.user.username} />
+                    )}
+
+                    <Typography style={{ color: "gray", margin: "10px 20px" }}>{x.createdAt}</Typography>
                     <Comment postId={x._id} />
                 </Card>
             )
