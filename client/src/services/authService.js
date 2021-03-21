@@ -22,7 +22,21 @@ async function login(data) {
         .catch(error => console.log(error));
 }
 
+async function getUser(userId) {
+    return await fetch(`http://localhost:5000/user/${userId}`, {
+        method: 'GET',
+        headers: {
+            'Content-Type': 'application/json',
+            'session': sessionStorage.getItem('session')
+        },
+        // body: JSON.stringify(userId),
+    })
+        .then(res => res.json())
+        .catch(error => console.log(error));
+}
+
 export default {
     register,
     login,
+    getUser,
 }
