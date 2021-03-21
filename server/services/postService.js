@@ -1,5 +1,6 @@
 const Post = require('../models/Post');
 const User = require('../models/User');
+const Comment = require('../models/Comment');
 
 const create = async (data) => {
     const { imageUrl, userId, description } = data;
@@ -18,7 +19,7 @@ const create = async (data) => {
 const getAll = async (data) => {
     const { imageUrl, userId, description } = data;
     //TODO get user followers posts
-    let posts = await Post.find().populate({ path: 'owner', select: 'username' }).lean();
+    let posts = await Post.find().populate({ path: 'owner', select: 'username' }).populate({ path: 'comments', populate: { path: 'user' } }).lean();
     console.log(posts);
 
     return posts;
@@ -56,9 +57,22 @@ const savePost = async (data) => {
     return await user.save();
 };
 
+const addComment = async (data) => {
+    const { postId, userId, comment: content } = data;
+
+    const user = await User.findOne({ _id: userId });
+    const post = await Post.findOne({ _id: postId });
+
+    let dbComment = new Comment({ user, post, content });
+    await dbComment.save();
+    post.comments.push(dbComment);
+    return await post.save();
+};
+
 module.exports = {
     getAll,
     create,
     savePost,
     likePost,
+    addComment,
 };
