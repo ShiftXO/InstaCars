@@ -15,6 +15,8 @@ import Avatar from '@material-ui/core/Avatar';
 import { Divider, Grid, GridList, GridListTile } from '@material-ui/core';
 import authService from '../services/authService';
 
+import Modal from './PostDetails';
+
 const useStyles = makeStyles((theme) => ({
     root: {
         backgroundColor: "red",
@@ -33,7 +35,7 @@ const useStyles = makeStyles((theme) => ({
     },
     image: {
         "&:hover": {
-            opacity: 0.25
+            opacity: 0.55
         },
         width: 295,
         height: 295,
@@ -49,6 +51,15 @@ const useStyles = makeStyles((theme) => ({
 export default function UserPage(props) {
     const classes = useStyles();
     const [user, setUser] = useState(null);
+    const [open, setOpen] = useState(false);
+
+    const handleOpen = () => {
+        setOpen(true);
+    };
+
+    const handleClose = () => {
+        setOpen(false);
+    };
 
     useEffect(() => {
         const fetchData = async () => {
@@ -105,9 +116,10 @@ export default function UserPage(props) {
                         <Grid className={classes.imageContainer} container >
                             {user.posts.map(post =>
                                 <Grid key={post._id} item xs={4} >
-                                    <img className={classes.image} src={post.imageUrl} />
+                                    <img className={classes.image} src={post.imageUrl} onClick={handleOpen} />
                                 </Grid>
                             )}
+                            <Modal handleOpen={handleOpen} handleClose={handleClose} open={open} ></Modal>
                         </Grid>
                     </>
                 ) : ('')}
