@@ -58,7 +58,7 @@ const useStyles = makeStyles((theme) => ({
     },
 }));
 
-export default function SignInSide() {
+export default function SignInSide(props) {
     const classes = useStyles();
     const [email, setEmail] = useState('');
     const [password, setPassword] = useState('');
@@ -67,8 +67,12 @@ export default function SignInSide() {
         e.preventDefault();
         console.log(email);
         console.log(password);
-        let token = await authService.login({ email, password });
-        console.log(token);
+        let response = await authService.login({ email, password });
+        if (response.status == 200) {
+            props.history.push('/')
+        } else {
+            // show error
+        }
     }
 
     return (
