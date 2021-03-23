@@ -7,12 +7,11 @@ const isAuth = require('../middlewares/isAuthenticated');
 const isGuest = require('../middlewares/isGuest');
 
 const config = require('../config/index');
-const { json } = require('express');
 
 router.post('/login', async (req, res, next) => {
     try {
-        let result = await authService.login(req.body);
-        res.status(200).json({ result });
+        let token = await authService.login(req.body);
+        res.cookie(config.COOKIE_NAME, token.token, { httpOnly: true }).send();
     } catch (error) {
         console.log(error);
         return json(error);

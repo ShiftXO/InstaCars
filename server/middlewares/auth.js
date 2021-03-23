@@ -2,20 +2,18 @@ const jwt = require('jsonwebtoken');
 const config = require('../config/index');
 
 function auth(req, res, next) {
-    let authorizationHeader = req.get('session');
-    if (authorizationHeader) {
-        let token = authorizationHeader.replace('\"', '');
-        token = token.replace('\"', '');
+    try {
+        const token = req.cookies[config.COOKIE_NAME];
+        if (!token) return res.status(401).json({ errorMessage: "Unauthorized" });
 
-        try {
-            let decoded = jwt.verify(token, config.SECRET);
-            req.user = decoded;
-        } catch (error) {
-            return res.status(401).json({ errorData: { message: 'You cannot perform this action!' } });
-        }
+        const decoded = jwt.verify(token, config.SECRET);
+        req.user = decoded.user;
+
+        next();
+    } catch (error) {
+        console.error(error);
+        res.status(401).json({ errorMessage: "Unauthorized" });
     }
-
-    next();
 };
 
 function isAuth(req, res, next) {
