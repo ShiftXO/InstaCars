@@ -4,14 +4,14 @@ const config = {
         DB_CONNECTION: 'mongodb://localhost/InstaCars',
         SALT_ROUNDS: 10,
         SECRET: 'samobmw',
-        COOKIE_NAME: 'USER_SESSION',
+        COOKIE_NAME: 'x-auth-token',
     },
     production: {
         PORT: 80,
         DB_CONNECTION: 'insert mongodb atlas connection here',
         SALT_ROUNDS: 10,
         SECRET: 'samobmw',
-        COOKIE_NAME: 'USER_SESSION',
+        COOKIE_NAME: 'x-auth-token',
     }
 };
 
