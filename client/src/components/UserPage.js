@@ -14,7 +14,7 @@ import InfoIcon from "@material-ui/icons/Info";
 import Avatar from '@material-ui/core/Avatar';
 import { Divider, Grid, GridList, GridListTile } from '@material-ui/core';
 import authService from '../services/authService';
-
+import { Link } from 'react-router-dom';
 import Modal from './PostDetails';
 
 const useStyles = makeStyles((theme) => ({
@@ -52,20 +52,21 @@ export default function UserPage(props) {
     const classes = useStyles();
     const [user, setUser] = useState(null);
     const [open, setOpen] = useState(false);
+    const [post, setPost] = useState('');
 
-    const handleOpen = () => {
+    const handleOpen = (id) => {
+        setPost(id)
         setOpen(true);
     };
 
     const handleClose = () => {
+        setPost('');
         setOpen(false);
     };
 
     useEffect(() => {
         const fetchData = async () => {
-            console.log(props.match.params.id);
             const data = await authService.getUser(props.match.params.id);
-            console.log(data.result);
             if (data.result) {
                 setUser(data.result);
             }
@@ -115,14 +116,20 @@ export default function UserPage(props) {
 
                         <Grid className={classes.imageContainer} container >
                             {user.posts.map(post =>
-                                <Grid key={post._id} item xs={4} >
-                                    <img className={classes.image} src={post.imageUrl} onClick={handleOpen} />
+                                < Grid key={post._id} item xs={4} >
+                                    {/* <Link to={`/p/${post._id}`}> */}
+                                    < img className={classes.image} src={post.imageUrl} onClick={() => handleOpen(post._id)} />
+                                    {/* </Link> */}
                                 </Grid>
                             )}
-                            <Modal handleOpen={handleOpen} handleClose={handleClose} open={open} ></Modal>
+
+                            {post ? (
+                                <Modal handleOpen={handleOpen} handleClose={handleClose} open={open} post={post} />
+                            ) : ''}
                         </Grid>
                     </>
-                ) : ('')}
+                ) : ('')
+            }
         </>
     );
 }

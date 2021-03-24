@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { makeStyles } from '@material-ui/core/styles';
 import Button from '@material-ui/core/Button';
 import TextField from '@material-ui/core/TextField';
@@ -18,6 +18,7 @@ import SendRoundedIcon from '@material-ui/icons/SendRounded';
 import BookmarkBorderRoundedIcon from '@material-ui/icons/BookmarkBorderRounded';
 
 import NewComment from "./NewComment";
+import postService from '../services/postService';
 
 const useStyles = makeStyles((theme) => ({
     root: {
@@ -55,74 +56,92 @@ const useStyles = makeStyles((theme) => ({
 
 export default function TransitionsModal(props) {
     const classes = useStyles();
+    const [currentPost, setcurrentPost] = useState(null);
+
+    useEffect(() => {
+        const fetchData = async ({ post } = props) => {
+            console.log(post);
+            if (!post) {
+                return
+            }
+            const data = await postService.getPost(post);
+            console.log(data);
+            setcurrentPost(data.result)
+        };
+
+        fetchData();
+    }, [])
 
     return (
         <div>
-            <Modal
-                aria-labelledby="transition-modal-title"
-                aria-describedby="transition-modal-description"
-                className={classes.modal}
-                open={props.open}
-                onClose={props.handleClose}
-                closeAfterTransition
-                BackdropComponent={Backdrop}
-                BackdropProps={{
-                    timeout: 500,
-                }}
-            >
-                <Fade in={props.open}>
-                    <div className={classes.paper}>
-                        <Grid className={classes.root} container spacing={2} >
+            {currentPost ? (
+                <Modal
+                    aria-labelledby="transition-modal-title"
+                    aria-describedby="transition-modal-description"
+                    className={classes.modal}
+                    open={props.open}
+                    onClose={props.handleClose}
+                    closeAfterTransition
+                    BackdropComponent={Backdrop}
+                    BackdropProps={{
+                        timeout: 500,
+                    }}
+                >
+                    <Fade in={props.open}>
+                        <div className={classes.paper}>
+                            <Grid className={classes.root} container spacing={2} >
 
-                            <Grid item >
-                                <img className={classes.image} src="https://mediapool.bmwgroup.com/cache/P9/202010/P90403620/P90403620-bmw-m4-competition-x-kith-10-2020-2002px.jpg" />
-                            </Grid>
+                                <Grid item >
+                                    <img className={classes.image} src={currentPost.imageUrl} />
+                                </Grid>
 
-                            <Grid item  >
-                                <Grid container justify="flex-start" className={classes.head} >
-                                    <Grid item xs={2} >
-                                        <Avatar src="https://mediapool.bmwgroup.com/cache/P9/202010/P90403620/P90403620-bmw-m4-competition-x-kith-10-2020-2002px.jpg" />
-                                    </Grid>
+                                <Grid item  >
+                                    <Grid container justify="flex-start" className={classes.head} >
+                                        <Grid item xs={2} >
+                                            <Avatar src="https://mediapool.bmwgroup.com/cache/P9/202010/P90403620/P90403620-bmw-m4-competition-x-kith-10-2020-2002px.jpg" />
+                                        </Grid>
 
-                                    <Grid item >
-                                        <Typography variant="h5" >aaaaa</Typography>
-                                    </Grid>
+                                        <Grid item >
+                                            <Typography variant="h5" >{currentPost.owner.username}</Typography>
+                                        </Grid>
 
-                                    {/* <Grid item xs={1}>
+                                        {/* <Grid item xs={1}>
                                         <IconButton aria-label="delete" className={classes.margin} >
                                             <MoreHorizIcon />
                                         </IconButton>
                                     </Grid> */}
-                                </Grid>
-
-                                <Grid container  >
-                                    <NewComment />
-                                </Grid>
-
-                                <Grid container >
-                                    <Grid>
-                                        <IconButton>
-                                            <FavoriteBorderRoundedIcon />
-                                        </IconButton>
-                                        <IconButton>
-                                            <ChatBubbleOutlineRoundedIcon />
-                                        </IconButton>
-                                        <IconButton>
-                                            <BookmarkBorderRoundedIcon />
-                                        </IconButton>
                                     </Grid>
-                                    <TextField
-                                        id="standard-basic"
-                                        label="Add a comment..."
-                                        fullWidth
-                                        InputProps={{ endAdornment: <Button color="primary" type="submit">Post</Button> }}
-                                    />
+
+                                    <Grid container>
+                                        <NewComment />
+                                    </Grid>
+
+                                    <Grid container >
+                                        <Grid>
+                                            <IconButton>
+                                                <Typography>{currentPost.usersLiked.length > 0 ? currentPost.usersLiked.length : ''}</Typography>
+                                                <FavoriteBorderRoundedIcon />
+                                            </IconButton>
+                                            <IconButton>
+                                                <ChatBubbleOutlineRoundedIcon />
+                                            </IconButton>
+                                            <IconButton>
+                                                <BookmarkBorderRoundedIcon />
+                                            </IconButton>
+                                        </Grid>
+                                        <TextField
+                                            id="standard-basic"
+                                            label="Add a comment..."
+                                            fullWidth
+                                            InputProps={{ endAdornment: <Button color="primary" type="submit">Post</Button> }}
+                                        />
+                                    </Grid>
                                 </Grid>
                             </Grid>
-                        </Grid>
-                    </div>
-                </Fade>
-            </Modal>
+                        </div>
+                    </Fade>
+                </Modal>
+            ) : ''}
         </div>
     );
 }

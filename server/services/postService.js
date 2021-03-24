@@ -25,6 +25,14 @@ const getAll = async (data) => {
     return posts;
 };
 
+const getById = async (id) => {
+    //TODO get user followers posts
+    let posts = await Post.findOne({ _id: id }).populate({ path: 'owner', select: 'username' }).populate({ path: 'comments', populate: { path: 'user' } }).lean();
+    console.log(posts);
+
+    return posts;
+};
+
 const likePost = async (data) => {
     const { _id, userId } = data;
 
@@ -71,6 +79,7 @@ const addComment = async (data) => {
 
 module.exports = {
     getAll,
+    getById,
     create,
     savePost,
     likePost,

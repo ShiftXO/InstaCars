@@ -5,6 +5,7 @@ async function create(data) {
             'Content-Type': 'application/json',
             'session': sessionStorage.getItem('session')
         },
+        credentials: 'include',
         body: JSON.stringify(data),
     })
         .then(res => res.json())
@@ -19,6 +20,7 @@ async function like(data) {
             'Content-Type': 'application/json',
             'session': sessionStorage.getItem('session')
         },
+        credentials: 'include',
         body: JSON.stringify(data),
     })
         .then(res => res.json())
@@ -33,6 +35,7 @@ async function save(data) {
             'Content-Type': 'application/json',
             'session': sessionStorage.getItem('session')
         },
+        credentials: 'include',
         body: JSON.stringify(data),
     })
         .then(res => res.json())
@@ -46,6 +49,7 @@ async function getAll(data) {
             'Content-Type': 'application/json',
             'session': sessionStorage.getItem('session')
         },
+        credentials: 'include',
         body: JSON.stringify(data),
     })
         .then(res => res.json())
@@ -59,7 +63,20 @@ async function addComment(data) {
             'Content-Type': 'application/json',
             'session': sessionStorage.getItem('session')
         },
+        credentials: 'include',
         body: JSON.stringify(data),
+    })
+        .then(res => res.json())
+        .catch(error => console.log(error));
+}
+
+async function getPost(id) {
+    return await fetch(`http://localhost:5000/post/${id}`, {
+        method: 'GET',
+        headers: {
+            'Content-Type': 'application/json',
+        },
+        credentials: 'include'
     })
         .then(res => res.json())
         .catch(error => console.log(error));
@@ -70,5 +87,6 @@ export default {
     like,
     save,
     addComment,
-    getAll
+    getAll,
+    getPost
 }
