@@ -1,4 +1,5 @@
 import React from 'react';
+import { Link } from '@material-ui/core';
 import { makeStyles } from '@material-ui/core/styles';
 import List from '@material-ui/core/List';
 import ListItem from '@material-ui/core/ListItem';
@@ -16,7 +17,6 @@ import Grid from '@material-ui/core/Grid';
 import Typography from '@material-ui/core/Typography';
 import FolderIcon from '@material-ui/icons/Folder';
 import DeleteIcon from '@material-ui/icons/Delete';
-import { Link } from '@material-ui/core';
 
 const useStyles = makeStyles((theme) => ({
     root: {
@@ -26,39 +26,46 @@ const useStyles = makeStyles((theme) => ({
 }));
 
 
-export default function InteractiveList() {
+export default function InteractiveList(props) {
     const classes = useStyles();
+    console.log(props.comments);
+
+    const handleClick = (id) => {
+        console.log(id);
+    }
     return (
         <Grid xs={12} className={classes.root}>
             <List >
-                <ListItem>
-                    <ListItemAvatar>
-                        <Avatar alt="Remy Sharp" src="/static/images/avatar/1.jpg" />
-                    </ListItemAvatar>
-                    <ListItemText
-                        primary={
-                            <React.Fragment>
-                                <Link>user </Link>
-                                <Typography
-                                    component="span"
-                                    variant="body2"
-                                    className={classes.inline}
-                                    color="textPrimary"
-                                >
-                                    Ali ConnorsAli
-                            </Typography>
-                            </React.Fragment>
-                        }
-                        secondary={
-                            '10h 12likes'
-                        }
-                    />
-                    <ListItemSecondaryAction>
-                        <IconButton edge="end" aria-label="delete">
-                            <FavoriteBorderRoundedIcon />
-                        </IconButton>
-                    </ListItemSecondaryAction>
-                </ListItem>
+                {props.comments.map(x =>
+                    <ListItem key={x._id}>
+                        <ListItemAvatar>
+                            <Avatar alt="Remy Sharp" src="/static/images/avatar/1.jpg" />
+                        </ListItemAvatar>
+                        <ListItemText
+                            primary={
+                                <React.Fragment>
+                                    <Link onClick={() => handleClick(x.user._id)}>{x.user.username} </Link>
+                                    <Typography
+                                        component="span"
+                                        variant="body2"
+                                        className={classes.inline}
+                                        color="textPrimary"
+                                    >
+                                        {x.content}
+                                    </Typography>
+                                </React.Fragment>
+                            }
+                            secondary={
+                                '10h 12likes'
+                            }
+                        />
+                        <ListItemSecondaryAction>
+                            <IconButton edge="end" aria-label="delete">
+                                <FavoriteBorderRoundedIcon />
+                            </IconButton>
+                        </ListItemSecondaryAction>
+                    </ListItem>
+                )}
             </List>
         </Grid>
     );
