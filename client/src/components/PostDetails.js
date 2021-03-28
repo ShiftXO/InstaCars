@@ -113,7 +113,7 @@ export default function TransitionsModal(props) {
                                     </Grid>
 
                                     <Grid container>
-                                        <NewComment />
+                                        <NewComment comments={currentPost.comments} />
                                     </Grid>
 
                                     <Grid container >

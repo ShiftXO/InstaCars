@@ -46,6 +46,12 @@ const getUserById = async (id) => {
     return data;
 };
 
+const getUserSavedPosts = async (id) => {
+    let data = await User.findOne({ _id: id }).populate({ path: 'savedPosts', select: 'imageUrl' }).select('savedPosts').lean();
+    console.log(data);
+    return data;
+};
+
 const getUsers = async () => {
     let data = await User.find().lean();
     console.log(data);
@@ -77,4 +83,5 @@ module.exports = {
     getUserById,
     getUsers,
     followUser,
+    getUserSavedPosts,
 };

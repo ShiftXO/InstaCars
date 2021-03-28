@@ -63,6 +63,20 @@ async function getUsers() {
         .catch(error => console.log(error));
 }
 
+async function getUserSavedPosts(id) {
+    return await fetch(`http://localhost:5000/user/${id}/saved`, {
+        method: 'GET',
+        headers: {
+            'Content-Type': 'application/json',
+            'session': sessionStorage.getItem('session')
+        },
+        credentials: 'include',
+        // body: JSON.stringify(userId),
+    })
+        .then(res => res.json())
+        .catch(error => console.log(error));
+}
+
 async function followUser(users) {
     return await fetch(`http://localhost:5000/user/${users.followedUserId}/follow`, {
         method: 'POST',
@@ -83,4 +97,5 @@ export default {
     getUser,
     getUsers,
     followUser,
+    getUserSavedPosts,
 }
