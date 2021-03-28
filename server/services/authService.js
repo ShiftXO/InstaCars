@@ -32,6 +32,7 @@ const login = async (data) => {
         user: {
             _id: user._id,
             username: user.username,
+            profileImage: user.profileImage,
         },
         token
     }
@@ -45,6 +46,25 @@ const getUserById = async (id) => {
     return data;
 };
 
+const getUsers = async () => {
+    let data = await User.find().lean();
+    console.log(data);
+    return data;
+};
+
+const followUser = async (users) => {
+    const { userId, followedUserId } = users;
+
+    let user = await User.findOne({ _id: userId });
+    let followedUser = await User.findOne({ _id: followedUserId });
+
+    followedUser.followers.push(user);
+    user.following.push(followedUser);
+
+    await followedUser.save();
+    return await user.save();
+};
+
 const getUsername = async (_id) => {
     let result = await User.findById(_id).select('username');
     return result.username;
@@ -55,4 +75,6 @@ module.exports = {
     login,
     getUsername,
     getUserById,
+    getUsers,
+    followUser,
 };

@@ -20,7 +20,7 @@ const getAll = async (data) => {
     const { imageUrl, userId, description } = data;
     //TODO get user followers posts
     let posts = await Post.find().populate({ path: 'owner', select: 'username' }).populate({ path: 'comments', populate: { path: 'user' } }).lean();
-    console.log(posts);
+    //console.log(posts);
 
     return posts;
 };
