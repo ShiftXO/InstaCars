@@ -1,4 +1,5 @@
-import React, { useState } from 'react';
+import React, { useState, useContext } from 'react';
+import { useHistory } from 'react-router-dom'
 import Avatar from '@material-ui/core/Avatar';
 import Button from '@material-ui/core/Button';
 import CssBaseline from '@material-ui/core/CssBaseline';
@@ -14,13 +15,15 @@ import Typography from '@material-ui/core/Typography';
 import { makeStyles } from '@material-ui/core/styles';
 import authService from '../services/authService';
 
+import UserContext from '../UserContext';
+
 function Copyright() {
     return (
         <Typography variant="body2" color="textSecondary" align="center">
             {'Copyright © '}
-            <Link color="inherit" href="https://material-ui.com/">
-                Your Website
-      </Link>{' '}
+            <Link color="inherit" href="/">
+                Instacars
+            </Link>{' '}
             {new Date().getFullYear()}
             {'.'}
         </Typography>
@@ -62,14 +65,18 @@ export default function SignInSide(props) {
     const classes = useStyles();
     const [email, setEmail] = useState('');
     const [password, setPassword] = useState('');
+    const history = useHistory();
+    const context = useContext(UserContext)
 
+    console.log('login', context);
     async function handleLogin(e) {
         e.preventDefault();
-        console.log(email);
-        console.log(password);
         let response = await authService.login({ email, password });
-        if (response.status == 200) {
-            props.history.push('/')
+        console.log('res ', response.user);
+        if (response) {
+            let user = response.user;
+            context.logIn({ ...user });
+            history.push('/')
         } else {
             // show error
         }
@@ -86,7 +93,7 @@ export default function SignInSide(props) {
                     </Avatar>
                     <Typography component="h1" variant="h5">
                         Sign in
-          </Typography>
+                    </Typography>
                     <form className={classes.form} noValidate onSubmit={(e) => handleLogin(e)}>
                         <TextField
                             variant="outlined"

@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useContext } from 'react';
 import { fade, makeStyles } from '@material-ui/core/styles';
 import AppBar from '@material-ui/core/AppBar';
 import Toolbar from '@material-ui/core/Toolbar';
@@ -16,6 +16,7 @@ import AccountCircle from '@material-ui/icons/AccountCircle';
 import MailIcon from '@material-ui/icons/Mail';
 import SendIcon from '@material-ui/icons/Send';
 import MoreIcon from '@material-ui/icons/MoreVert';
+import UserContext from '../UserContext';
 
 import { Link } from 'react-router-dom'
 
@@ -83,6 +84,13 @@ const useStyles = makeStyles((theme) => ({
             display: 'none',
         },
     },
+    link: {
+        color: 'white'
+    },
+    navLink: {
+        color: 'black',
+        textDecoration: 'none'
+    }
 }));
 
 export default function PrimarySearchAppBar() {
@@ -91,9 +99,16 @@ export default function PrimarySearchAppBar() {
     const [mobileMoreAnchorEl, setMobileMoreAnchorEl] = React.useState(null);
 
     const [open, setOpen] = useState(false);
+    const context = useContext(UserContext)
 
     const isMenuOpen = Boolean(anchorEl);
     const isMobileMenuOpen = Boolean(mobileMoreAnchorEl);
+
+    const handleLogOut = () => {
+        console.log(context);
+        handleMenuClose();
+        context.logOut();
+    }
 
     const handleProfileMenuOpen = (event) => {
         setAnchorEl(event.currentTarget);
@@ -131,8 +146,12 @@ export default function PrimarySearchAppBar() {
             open={isMenuOpen}
             onClose={handleMenuClose}
         >
-            <MenuItem onClick={handleMenuClose}>Profile</MenuItem>
-            <MenuItem onClick={handleMenuClose}>My account</MenuItem>
+            <Link to={`/profile/${context.user._id}`} className={classes.navLink}>
+                <MenuItem onClick={handleMenuClose}>
+                    Profile
+            </MenuItem>
+            </Link>
+            <MenuItem onClick={handleLogOut}>Log out</MenuItem>
         </Menu>
     );
 
@@ -178,7 +197,7 @@ export default function PrimarySearchAppBar() {
                 >
                     <AccountCircle />
                 </IconButton>
-                <p>Profile</p>
+                <Link to={`/profile/${context.user._id}`}>Profile</Link>
             </MenuItem>
         </Menu>
     );
@@ -218,12 +237,16 @@ export default function PrimarySearchAppBar() {
                         </IconButton>
                         <IconButton aria-label="show 4 new mails" color="inherit">
                             <Badge badgeContent={4} color="secondary">
-                                <HomeIcon />
+                                <Link to="/" className={classes.link}>
+                                    <HomeIcon />
+                                </Link>
                             </Badge>
                         </IconButton>
                         <IconButton aria-label="show 17 new notifications" color="inherit">
                             <Badge badgeContent={17} color="secondary">
-                                <SendIcon />
+                                <Link to="/inbox" className={classes.link}>
+                                    <SendIcon />
+                                </Link>
                             </Badge>
                         </IconButton>
                         <IconButton
