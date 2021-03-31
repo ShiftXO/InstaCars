@@ -34,12 +34,12 @@ export default function InteractiveList(props) {
         console.log(id);
     }
     return (
-        <Grid xs={12} className={classes.root}>
+        <Grid item xs={12} className={classes.root}>
             <List >
                 {props.comments.map(x =>
                     <ListItem key={x._id}>
                         <ListItemAvatar>
-                            <Avatar alt="Remy Sharp" src="/static/images/avatar/1.jpg" />
+                            <Avatar alt={x.user.username} src={x.user.profileImage} />
                         </ListItemAvatar>
                         <ListItemText
                             primary={

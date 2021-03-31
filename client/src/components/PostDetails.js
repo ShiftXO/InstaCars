@@ -65,7 +65,7 @@ export default function TransitionsModal(props) {
                 return
             }
             const data = await postService.getPost(post);
-            console.log(data);
+            console.log('data', data);
             setcurrentPost(data.result)
         };
 
@@ -98,7 +98,7 @@ export default function TransitionsModal(props) {
                                 <Grid item  >
                                     <Grid container justify="flex-start" className={classes.head} >
                                         <Grid item xs={2} >
-                                            <Avatar src="https://mediapool.bmwgroup.com/cache/P9/202010/P90403620/P90403620-bmw-m4-competition-x-kith-10-2020-2002px.jpg" />
+                                            <Avatar src={currentPost.owner.profileImage} />
                                         </Grid>
 
                                         <Grid item >
@@ -130,7 +130,6 @@ export default function TransitionsModal(props) {
                                             </IconButton>
                                         </Grid>
                                         <TextField
-                                            id="standard-basic"
                                             label="Add a comment..."
                                             fullWidth
                                             InputProps={{ endAdornment: <Button color="primary" type="submit">Post</Button> }}

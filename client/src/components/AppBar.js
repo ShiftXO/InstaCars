@@ -90,6 +90,9 @@ const useStyles = makeStyles((theme) => ({
     navLink: {
         color: 'black',
         textDecoration: 'none'
+    },
+    appBar: {
+        marginBottom: "110px",
     }
 }));
 
@@ -203,7 +206,7 @@ export default function PrimarySearchAppBar() {
     );
 
     return (
-        <div className={classes.grow}>
+        <div className={classes.grow} className={classes.appBar}>
             <Create handleOpen={handleOpen} handleClose={handleClose} open={open} />
             <AppBar position="fixed">
                 <Toolbar>
