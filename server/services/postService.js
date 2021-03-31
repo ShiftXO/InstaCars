@@ -19,7 +19,7 @@ const create = async (data) => {
 const getAll = async (data) => {
     const { imageUrl, userId, description } = data;
     //TODO get user followers posts
-    let posts = await Post.find().populate({ path: 'owner', select: 'username' }).populate({ path: 'comments', populate: { path: 'user' } }).lean();
+    let posts = await Post.find().populate({ path: 'owner', select: 'username profileImage' }).populate({ path: 'comments', populate: { path: 'user' } }).lean();
     //console.log(posts);
 
     return posts;
@@ -27,7 +27,7 @@ const getAll = async (data) => {
 
 const getById = async (id) => {
     //TODO get user followers posts
-    let posts = await Post.findOne({ _id: id }).populate({ path: 'owner', select: 'username' }).populate({ path: 'comments', populate: { path: 'user' } }).lean();
+    let posts = await Post.findOne({ _id: id }).populate({ path: 'owner', select: 'username profileImage' }).populate({ path: 'comments', populate: { path: 'user profileImage' } }).lean();
     console.log(posts);
 
     return posts;

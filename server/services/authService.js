@@ -4,7 +4,7 @@ const { SALT_ROUNDS, SECRET } = require('../config');
 const User = require('../models/User');
 
 const register = async (data) => {
-    const { email, fullName, username, password, isPublic } = data;
+    const { email, fullName, imageUrl, username, password, isPublic } = data;
 
     let userdb = await User.findOne({ username });
     if (userdb) throw { error: { message: 'User already exists!' } };
@@ -12,7 +12,7 @@ const register = async (data) => {
     let salt = await bcrypt.genSalt(SALT_ROUNDS);
     let hash = await bcrypt.hash(password, salt);
 
-    const user = new User({ email, fullName, username, isPublic: true, password: hash });
+    const user = new User({ email, fullName, username, profileImage: imageUrl, isPublic: true, password: hash });
 
     return await user.save();
 };
