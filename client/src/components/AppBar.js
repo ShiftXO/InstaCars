@@ -17,6 +17,7 @@ import MailIcon from '@material-ui/icons/Mail';
 import SendIcon from '@material-ui/icons/Send';
 import MoreIcon from '@material-ui/icons/MoreVert';
 import UserContext from '../UserContext';
+import Search from './Search';
 
 import { Link } from 'react-router-dom'
 
@@ -25,6 +26,7 @@ import Create from "./Create";
 const useStyles = makeStyles((theme) => ({
     grow: {
         flexGrow: 1,
+        width: '40px'
     },
     menuButton: {
         marginRight: theme.spacing(2),
@@ -37,14 +39,12 @@ const useStyles = makeStyles((theme) => ({
     },
     search: {
         position: 'relative',
-        borderRadius: theme.shape.borderRadius,
         backgroundColor: fade(theme.palette.common.white, 0.15),
         '&:hover': {
             backgroundColor: fade(theme.palette.common.white, 0.25),
         },
         marginRight: theme.spacing(2),
         marginLeft: 0,
-        width: '100%',
         [theme.breakpoints.up('sm')]: {
             marginLeft: theme.spacing(3),
             width: 'auto',
@@ -93,6 +93,7 @@ const useStyles = makeStyles((theme) => ({
     },
     appBar: {
         marginBottom: "110px",
+        width: '40px'
     }
 }));
 
@@ -108,7 +109,7 @@ export default function PrimarySearchAppBar() {
     const isMobileMenuOpen = Boolean(mobileMoreAnchorEl);
 
     const handleLogOut = () => {
-        console.log(context);
+        console.log('context', context);
         handleMenuClose();
         context.logOut();
     }
@@ -150,11 +151,11 @@ export default function PrimarySearchAppBar() {
             onClose={handleMenuClose}
         >
             <Link to={`/profile/${context.user._id}`} className={classes.navLink}>
-                <MenuItem onClick={handleMenuClose}>
+                <MenuItem>
                     Profile
-            </MenuItem>
+                </MenuItem>
             </Link>
-            <MenuItem onClick={handleLogOut}>Log out</MenuItem>
+            <MenuItem onClick={() => handleLogOut()}>Log out</MenuItem>
         </Menu>
     );
 
@@ -220,8 +221,9 @@ export default function PrimarySearchAppBar() {
                     <Typography className={classes.title} variant="h6" noWrap>
                         InstaCars
                     </Typography>
+
                     <div className={classes.search}>
-                        <div className={classes.searchIcon}>
+                        {/* <div className={classes.searchIcon}>
                             <SearchIcon />
                         </div>
                         <InputBase
@@ -231,8 +233,10 @@ export default function PrimarySearchAppBar() {
                                 input: classes.inputInput,
                             }}
                             inputProps={{ 'aria-label': 'search' }}
-                        />
+                        /> */}
+                        <Search></Search>
                     </div>
+
                     <div className={classes.grow} />
                     <div className={classes.sectionDesktop}>
                         <IconButton aria-label="add" color="inherit" onClick={handleOpen}>

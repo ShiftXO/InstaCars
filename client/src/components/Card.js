@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useState, useContext } from 'react';
 import { Link } from 'react-router-dom';
 import { makeStyles } from '@material-ui/core/styles';
 import clsx from 'clsx';
@@ -20,11 +20,15 @@ import SendIcon from '@material-ui/icons/Send';
 import ExpandMoreIcon from '@material-ui/icons/ExpandMore';
 import MoreVertIcon from '@material-ui/icons/MoreVert';
 import { Button, Container, Grid } from '@material-ui/core';
+import UserContext from '../UserContext';
 
-import UserComment from './UserComment';
+import CardDemo from './CardDemo';
+
+import PostComments from './PostComments';
 import Comment from "./Comment";
 
 import postService from "../services/postService";
+import PrimarySearchAppBar from './AppBar';
 
 const useStyles = makeStyles((theme) => ({
     root: {
@@ -55,39 +59,16 @@ const useStyles = makeStyles((theme) => ({
 }));
 
 export default function RecipeReviewCard() {
+    const context = useContext(UserContext)
     const classes = useStyles();
     const [posts, setPosts] = useState([]);
+    const [comments, setComments] = useState([]);
 
-    const [expanded, setExpanded] = useState(false);
-
-    const handleExpandClick = () => {
-        setExpanded(!expanded);
-    };
-
-    const handleLike = async (_id) => {
-        let userId = localStorage.getItem('_id');
-        let data = {
-            _id: _id,
-            userId: userId
-        };
-        let res = await postService.like(data);
-        console.log(res);
-    };
-
-    const handleSave = async (_id) => {
-        let userId = localStorage.getItem('_id');
-        let data = {
-            _id: _id,
-            userId: userId
-        };
-        let res = await postService.save(data);
-        console.log(res);
-    };
-
+    document.title = 'Instacars'
     useEffect(() => {
         const fetchData = async () => {
             const data = await postService.getAll();
-            console.log(data);
+            console.log('card data', data);
             if (data.result) {
                 setPosts(data.result);
             }
@@ -97,64 +78,11 @@ export default function RecipeReviewCard() {
     }, [])
 
     return (
-        <div>
-            {posts.map(x =>
-                <Card key={x._id} className={classes.root} >
-                    <CardHeader className={classes.cardHeader}
-                        avatar={
-                            <Avatar aria-label="recipe" className={classes.avatar} src={x.imageUrl} />
-                        }
-                        action={
-                            <IconButton aria-label="settings">
-                                <MoreVertIcon />
-                            </IconButton>
-                        }
-                        title={
-                            <Link to={`/profile/${x.owner._id}`}>
-                                <Typography color="inherit">{x.owner.username}</Typography>
-                            </Link>
-                        }
-                    />
-
-                    <CardMedia className={classes.media} image={x.imageUrl} onDoubleClick={() => handleLike(x._id)} />
-
-                    <CardContent>
-                        <Typography component="span">{x.owner.username} </Typography>
-                        <Typography variant="body2" color="textSecondary" component="span">{x.description}</Typography>
-                        <Typography>Show more</Typography>
-                    </CardContent>
-
-                    <CardActions disableSpacing>
-                        <IconButton aria-label="like" color="secondary" onClick={() => handleLike(x._id)} >
-                            <Typography>{x.usersLiked.length > 0 ? x.usersLiked.length : ''}</Typography>
-                            <FavoriteIcon />
-                        </IconButton>
-                        <IconButton aria-label="send">
-                            <SendIcon />
-                        </IconButton>
-                        <IconButton aria-label="save" onClick={() => handleSave(x._id)}>
-                            <BookmarkBorder />
-                        </IconButton>
-                        <IconButton
-                            className={clsx(classes.expand, {
-                                [classes.expandOpen]: expanded,
-                            })}
-                            onClick={handleExpandClick}
-                            aria-expanded={expanded}
-                            aria-label="show more"
-                        >
-                        </IconButton>
-                    </CardActions>
-
-                    {x.comments.map(comment =>
-                        <UserComment key={comment._id} content={comment.content} username={comment.user.username} />
-                    )}
-
-                    <Typography style={{ color: "gray", margin: "10px 20px" }}>{x.createdAt}</Typography>
-                    <Comment postId={x._id} />
-                </Card>
-            )
-            }
-        </div >
+        <>
+            <PrimarySearchAppBar />
+            {posts.map(post =>
+                <CardDemo key={post._id} post={post} />
+            )}
+        </ >
     );
 }

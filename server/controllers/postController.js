@@ -53,6 +53,18 @@ router.post('/:_id/save', async (req, res, next) => {
     }
 });
 
+router.post('/:_id/delete', auth, async (req, res, next) => {
+    try {
+        let id = req.params._id;
+        let user = req.user;
+        let result = await postService.deletePost({ id, user });
+        console.log(result);
+        res.status(200).json({ result });
+    } catch (error) {
+        return res.status(400).json(error);
+    }
+});
+
 router.post('/comment', async (req, res, next) => {
     try {
         let result = await postService.addComment(req.body);

@@ -1,4 +1,5 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useState, useContext } from 'react';
+import { useHistory } from 'react-router-dom';
 import { makeStyles } from '@material-ui/core/styles';
 import Card from '@material-ui/core/Card';
 import CardActionArea from '@material-ui/core/CardActionArea';
@@ -8,6 +9,9 @@ import CardMedia from '@material-ui/core/CardMedia';
 import Button from '@material-ui/core/Button';
 import Typography from '@material-ui/core/Typography';
 import GridListTileBar from "@material-ui/core/GridListTileBar";
+import Menu from '@material-ui/core/Menu';
+import MenuItem from '@material-ui/core/MenuItem';
+import MoreVertIcon from '@material-ui/icons/MoreVert';
 import ListSubheader from "@material-ui/core/ListSubheader";
 import IconButton from "@material-ui/core/IconButton";
 import InfoIcon from "@material-ui/icons/Info";
@@ -16,6 +20,14 @@ import { Divider, Grid, GridList, GridListTile } from '@material-ui/core';
 import authService from '../services/authService';
 import { Link } from 'react-router-dom';
 import Modal from './PostDetails';
+
+import Paper from '@material-ui/core/Paper';
+import Tabs from '@material-ui/core/Tabs';
+import Tab from '@material-ui/core/Tab';
+
+import UserContext from '../UserContext';
+import Posts from './Posts';
+import PrimarySearchAppBar from './AppBar';
 
 const useStyles = makeStyles((theme) => ({
     root: {
@@ -46,40 +58,98 @@ const useStyles = makeStyles((theme) => ({
         width: theme.spacing(20),
         height: theme.spacing(20),
     },
+    divider: {
+        margin: '15px 0px 15px',
+    },
+    tabs: {
+        marginBottom: '15px'
+    }
 }));
 
-export default function UserPage(props) {
+export default function UserPage({ ...props }) {
     const classes = useStyles();
+    const context = useContext(UserContext)
+    const history = useHistory();
+    console.log(props);
+
     const [user, setUser] = useState(null);
-    const [open, setOpen] = useState(false);
-    const [post, setPost] = useState('');
+    const [page, setPage] = useState(0);
+    const [isFollowed, setIsFollowed] = useState(false);
 
-    const handleOpen = (id) => {
-        setPost(id)
-        setOpen(true);
+    const [isOwner, setIsOwner] = useState(false);
+
+    const tabNameToIndex = {
+        0: "",
+        1: "saved"
     };
 
-    const handleClose = () => {
-        setPost('');
-        setOpen(false);
+    const indexToTabName = {
+        posts: 0,
+        saved: 1
     };
+
+    const handleChange = (event, newValue) => {
+        //console.log(context);
+        history.push(`/profile/${context.user._id}/${tabNameToIndex[newValue]}`);
+        setPage(newValue);
+    };
+
+    const handleFollow = async (id) => {
+        let users = {
+            userId: context.user._id,
+            followedUserId: id,
+        }
+        let res = await authService.followUser(users);
+        console.log(res);
+    }
 
     useEffect(() => {
         const fetchData = async () => {
             const data = await authService.getUser(props.match.params.id);
             if (data.result) {
                 setUser(data.result);
+                console.log('titlte', props);
+                setIsOwner(data.result._id == context.user._id);
+                document.title = data.result.username;
+                if (data.result.followers.some(x => x == context.user._id)) {
+                    setIsFollowed(true);
+                }
             }
         };
 
         fetchData();
-    }, [])
+    }, []);
+
+    const [anchorEl, setAnchorEl] = React.useState(null);
+    const open = Boolean(anchorEl);
+    const ITEM_HEIGHT = 48;
+    const handleClick = (event) => {
+        setAnchorEl(event.currentTarget);
+    };
+
+    const handleClose = () => {
+        setAnchorEl(null);
+    };
+
+    const handleDelete = async () => {
+        let userId = context.user._id;
+        //let res = await authService.deleteUser(userId);
+        context.logOut();
+    }
+
+    const handleEdit = async () => {
+        let userId = context.user._id;
+        history.push(`/profile/${userId}/edit`);
+        //let res = await authService.deleteUser(userId);
+        //context.logOut();
+    }
 
     return (
         <>
             {user != null ?
                 (
                     <>
+                        <PrimarySearchAppBar />
                         <Grid container direction="row" justify="center" >
                             <Grid item xs={2} >
                                 <Avatar alt="Remy Sharp" className={classes.large} src={user.profileImage} />
@@ -90,7 +160,35 @@ export default function UserPage(props) {
                                         <Typography variant="h5" className={classes.username}>{user.username}</Typography>
                                     </Grid>
                                     <Grid item>
-                                        <Button variant="contained" size="small" color="primary">follow</Button>
+                                        {!isOwner ? (
+                                            <Button variant="contained" size="small" color="primary" onClick={() => handleFollow(user._id)}>{isFollowed ? 'Unfollow' : 'Follow'}</Button>
+                                        ) : (
+                                            <>
+                                                <IconButton
+                                                    aria-label="more"
+                                                    aria-controls="long-menu"
+                                                    aria-haspopup="true"
+                                                    onClick={handleClick}
+                                                >
+                                                    <MoreVertIcon />
+                                                </IconButton>
+                                                <Menu
+                                                    anchorEl={anchorEl}
+                                                    keepMounted
+                                                    open={open}
+                                                    onClose={handleClose}
+                                                    PaperProps={{
+                                                        style: {
+                                                            maxHeight: ITEM_HEIGHT * 4.5,
+                                                            width: '20ch',
+                                                        },
+                                                    }}
+                                                >
+                                                    <MenuItem onClick={handleEdit}>Edit profile</MenuItem>
+                                                    <MenuItem onClick={handleDelete}>Delete profile</MenuItem>
+                                                </Menu>
+                                            </>
+                                        )}
                                     </Grid>
                                 </Grid>
                                 <Grid container spacing={4}>
@@ -112,21 +210,27 @@ export default function UserPage(props) {
                                 </Grid>
                             </Grid>
                         </Grid>
-                        <Divider component="hr" variant="fullWidth" />
+                        <Divider component="hr" variant="fullWidth" className={classes.divider} />
+                        {isOwner ?
+                            (
+                                <>
+                                    <Tabs
+                                        className={classes.tabs}
+                                        value={page}
+                                        indicatorColor="primary"
+                                        textColor="primary"
+                                        onChange={handleChange}
+                                        centered
+                                    >
+                                        <Tab label="Posts" />
+                                        <Tab label="Saved" />
+                                    </Tabs>
 
-                        <Grid className={classes.imageContainer} container >
-                            {user.posts.map(post =>
-                                < Grid key={post._id} item xs={4} >
-                                    {/* <Link to={`/p/${post._id}`}> */}
-                                    < img className={classes.image} src={post.imageUrl} onClick={() => handleOpen(post._id)} />
-                                    {/* </Link> */}
-                                </Grid>
-                            )}
-
-                            {post ? (
-                                <Modal handleOpen={handleOpen} handleClose={handleClose} open={open} post={post} />
-                            ) : ''}
-                        </Grid>
+                                    {page === 0 && <Posts user={user} page={page} />}
+                                    {page === 1 && <Posts user={user} page={page} />}
+                                </>
+                            ) : (<Posts user={user} page={page} />)
+                        }
                     </>
                 ) : ('')
             }

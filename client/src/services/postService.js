@@ -70,6 +70,18 @@ async function addComment(data) {
         .catch(error => console.log(error));
 }
 
+async function deletePost(id) {
+    return await fetch(`http://localhost:5000/post/${id}/delete`, {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json',
+        },
+        credentials: 'include',
+    })
+        .then(res => res.json())
+        .catch(error => console.log(error));
+}
+
 async function getPost(id) {
     return await fetch(`http://localhost:5000/post/${id}`, {
         method: 'GET',
@@ -83,10 +95,11 @@ async function getPost(id) {
 }
 
 export default {
-    create,
     like,
     save,
-    addComment,
     getAll,
-    getPost
+    create,
+    getPost,
+    deletePost,
+    addComment,
 }

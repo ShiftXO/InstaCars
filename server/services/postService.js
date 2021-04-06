@@ -49,20 +49,33 @@ const likePost = async (data) => {
     return await post.save();
 };
 
+const deletePost = async (data) => {
+    const { id, user } = data;
+
+    const post = await Post.findOne({ _id: id });
+    if (post.owner != user._id) throw { error: { message: "Cannot perform this action" } };
+
+    return await Post.deleteOne({ _id: id });
+};
+
 const savePost = async (data) => {
     const { _id, userId } = data;
 
     const user = await User.findOne({ _id: userId });
     const post = await Post.findOne({ _id });
 
-    let isSaved = user.savedPosts.some(x => x._id == _id);
+    let isSaved = post.usersSaved.some(x => x._id == _id);
     if (isSaved) {
+        await post.usersSaved.remove(user)
         await user.savedPosts.remove(post);
-        return await user.save();
+        await user.save();
+        return await post.save();
     }
 
     user.savedPosts.push(post);
-    return await user.save();
+    post.usersSaved.push(user);
+    await user.save();
+    return await post.save();
 };
 
 const addComment = async (data) => {
@@ -72,16 +85,18 @@ const addComment = async (data) => {
     const post = await Post.findOne({ _id: postId });
 
     let dbComment = new Comment({ user, post, content });
-    await dbComment.save();
+    let a = await dbComment.save();
     post.comments.push(dbComment);
-    return await post.save();
+    await post.save();
+    return a;
 };
 
 module.exports = {
     getAll,
-    getById,
     create,
+    getById,
     savePost,
     likePost,
     addComment,
+    deletePost,
 };

@@ -1,12 +1,8 @@
 const router = require('express').Router();
-//const jwt = require('jsonwebtoken');
-//const User = require('../models/User');
+const config = require('../config/index');
 const authService = require('../services/authService');
 
-const isAuth = require('../middlewares/isAuthenticated');
-const isGuest = require('../middlewares/isGuest');
-
-const config = require('../config/index');
+const { auth } = require('../middlewares/auth');
 const { json } = require('express');
 
 router.post('/login', async (req, res, next) => {
@@ -24,6 +20,55 @@ router.post('/register', async (req, res) => {
     // TODO: isPublic prop
     try {
         let result = await authService.register(req.body);
+        // console.log(result);
+        return json(result);
+    } catch (error) {
+        console.log(error);
+        return json(error);
+    }
+});
+
+router.get('/:id', auth, async (req, res, next) => {
+    try {
+        let data = {
+            _id: req.params.id,
+            user: req.user,
+        };
+
+        let result = await authService.getUserData(data);
+        return json(result);
+    } catch (error) {
+        console.log(error);
+        return json(error);
+    }
+});
+
+router.post('/:id/edit', auth, async (req, res, next) => {
+    try {
+        let data = {
+            _id: req.params.id,
+            user: req.user,
+            data: { ...req.body }
+        };
+
+        let result = await authService.editUser(data);
+        // console.log(result);
+        return json(result);
+    } catch (error) {
+        console.log(error);
+        return json(error);
+    }
+});
+
+router.post('/:_id/delete', auth, async (req, res) => {
+    // TODO: isPublic prop
+    try {
+        let data = {
+            _id: req.params._id,
+            user: req.user,
+        };
+
+        let result = await authService.deleteUser(data);
         // console.log(result);
         return json(result);
     } catch (error) {

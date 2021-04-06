@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { BrowserRouter, Route, Link, NavLink, Redirect, Switch } from 'react-router-dom';
+import { BrowserRouter, Route, Link, NavLink, Redirect, Switch, useHistory } from 'react-router-dom';
 
 import { Container, Grid } from "@material-ui/core";
 import { makeStyles } from '@material-ui/core/styles';
@@ -10,10 +10,12 @@ import Card from "./components/Card";
 import AppBar from "./components/AppBar";
 import UserPage from "./components/UserPage";
 import PostDetails from "./components/PostDetails"
-import Chat from './components/Chat';
 
 import UserContext from './UserContext';
+
+
 import authService from './services/authService';
+import EditPage from './components/EditPage';
 
 function App() {
   const useStyles = makeStyles((theme) => ({
@@ -24,10 +26,9 @@ function App() {
 
   const [user, setUser] = useState(null);
   //const [loggedIn, setLoggedIn] = useState(false);
-
+  const history = useHistory();
   useEffect(() => {
     const data = localStorage.getItem('user');
-    console.log('lul');
     if (data) {
       setUser(JSON.parse(data));
     }
@@ -47,54 +48,37 @@ function App() {
     localStorage.clear();
     await authService.logOut();
     setUser(null);
+    history.push('/login');
     //setLoggedIn(false);
   }
-
-  const classes = useStyles();
 
   const isLoggedIn = user;
   return (
     <UserContext.Provider value={{ user, logIn, logOut, }}>
       <BrowserRouter>
-
         <Switch>
+          <Route path="/profile/:id/edit" exact component={EditPage} />
+
+          <Route path="/profile/:id" exact render={history => <UserPage {...history} />}></Route>
 
           <Route path="/" exact>
             {isLoggedIn ? (
-              <>
-                <Grid className={classes.appBar}>
-                  <AppBar />
-                </Grid>
-                <Grid container direction={'column'} alignItems={'center'}>
-                  <Card />
-                </Grid>
-              </>
+              <Grid container direction={'column'} alignItems={'center'}>
+                <Card />
+              </Grid>
             ) : (<Redirect to="/login" />)}
+
           </Route>
 
-          <Route path="/p/:id" >
-            <Grid className={classes.appBar}>
-              <AppBar />
-            </Grid>
-            <PostDetails />
-          </Route>
-          <Route path="/profile/:id" component={UserPage} ></Route>
-
-          <Route path="/inbox" exact >
-            <Grid className={classes.appBar}>
-              <AppBar />
-            </Grid>
-            <Chat />
-          </Route>
 
           <Route path="/register">
             {isLoggedIn ? (<Redirect to="/" />) : (<SignUp />)}
           </Route>
+
           <Route path="/login">
             {isLoggedIn ? (<Redirect to="/" />) : (<SignIn />)}
           </Route>
         </Switch>
-
       </BrowserRouter>
     </UserContext.Provider>
   );

@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useContext, useState } from 'react';
 import { makeStyles } from '@material-ui/core/styles';
 import Button from '@material-ui/core/Button';
 import TextField from '@material-ui/core/TextField';
@@ -13,6 +13,7 @@ import ImageUploadCard from "./ImageUpload";
 import postService from "../services/postService";
 
 import config from "../config/index";
+import UserContext from '../UserContext';
 
 const useStyles = makeStyles((theme) => ({
     modal: {
@@ -44,7 +45,7 @@ const useStyles = makeStyles((theme) => ({
 
 export default function TransitionsModal(props) {
     const classes = useStyles();
-
+    const context = useContext(UserContext);
     const [description, setDescription] = useState('');
     const [file, setFile] = useState('');
     const [loading, setLoading] = useState(false);
@@ -55,7 +56,7 @@ export default function TransitionsModal(props) {
         setIsSubmited(true);
         setLoading(true);
 
-        let userId = localStorage.getItem('_id');
+        let userId = context.user._id;
 
         let cloudinaryData = new FormData();
         cloudinaryData.append('upload_preset', config.CLAUDINARY_PRESET_NAME);

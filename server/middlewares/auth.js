@@ -7,7 +7,7 @@ function auth(req, res, next) {
         if (!token) return res.status(401).json({ errorMessage: "Unauthorized" });
 
         const decoded = jwt.verify(token, config.SECRET);
-        req.user = decoded.user;
+        req.user = decoded;
 
         next();
     } catch (error) {

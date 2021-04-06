@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useContext } from 'react';
 import { makeStyles } from '@material-ui/core/styles';
 import Button from '@material-ui/core/Button';
 import TextField from '@material-ui/core/TextField';
@@ -7,18 +7,24 @@ import Backdrop from '@material-ui/core/Backdrop';
 import Fade from '@material-ui/core/Fade';
 import CheckCircleIcon from '@material-ui/icons/CheckCircle';
 import CircularProgress from '@material-ui/core/CircularProgress';
+import Menu from '@material-ui/core/Menu';
+import MenuItem from '@material-ui/core/MenuItem';
+import MoreVertIcon from '@material-ui/icons/MoreVert';
 import MoreHorizIcon from '@material-ui/icons/MoreHoriz';
 import IconButton from '@material-ui/core/IconButton';
 import { Grid, Input, Typography } from '@material-ui/core';
 import Avatar from '@material-ui/core/Avatar';
 
 import FavoriteBorderRoundedIcon from '@material-ui/icons/FavoriteBorderRounded';
+import FavoriteIcon from '@material-ui/icons/Favorite';
+import BookmarkBorderRoundedIcon from '@material-ui/icons/BookmarkBorderRounded';
+import BookmarkRoundedIcon from '@material-ui/icons/BookmarkRounded';
 import ChatBubbleOutlineRoundedIcon from '@material-ui/icons/ChatBubbleOutlineRounded';
 import SendRoundedIcon from '@material-ui/icons/SendRounded';
-import BookmarkBorderRoundedIcon from '@material-ui/icons/BookmarkBorderRounded';
 
 import NewComment from "./NewComment";
 import postService from '../services/postService';
+import UserContext from '../UserContext';
 
 const useStyles = makeStyles((theme) => ({
     root: {
@@ -56,21 +62,77 @@ const useStyles = makeStyles((theme) => ({
 
 export default function TransitionsModal(props) {
     const classes = useStyles();
-    const [currentPost, setcurrentPost] = useState(null);
+    const context = useContext(UserContext);
+
+    const [currentPost, setcurrentPost] = useState(undefined);
+
+    const [likesCount, setLikesCount] = useState(0);
+    const [liked, setLiked] = useState(false);
+    const [saved, setSaved] = useState(false);
+
+    const ITEM_HEIGHT = 48;
+    const [anchorEl, setAnchorEl] = useState(null);
+    const open = Boolean(anchorEl);
+
+    const handleClick = (event) => {
+        setAnchorEl(event.currentTarget);
+    };
+
+    const handleClose = () => {
+        setAnchorEl(null);
+    };
 
     useEffect(() => {
         const fetchData = async ({ post } = props) => {
             console.log(post);
-            if (!post) {
-                return
-            }
+            if (!post) return
+
             const data = await postService.getPost(post);
             console.log('data', data);
-            setcurrentPost(data.result)
+            setcurrentPost(data.result);
+            // setLikes(data.result.usersLiked);
+            setLikesCount(data.result.usersLiked.length);
+            const isSaved = data.result.usersSaved.some(x => x == context.user._id);
+            const isLiked = data.result.usersLiked.some(x => x == context.user._id);
+            setSaved(isSaved);
+            setLiked(isLiked);
+            // console.log('likes', likes);
         };
 
         fetchData();
     }, [])
+
+    const handleLike = async (_id) => {
+        let userId = context.user._id;
+
+        let data = {
+            _id: _id,
+            userId: userId
+        };
+
+        liked ? setLikesCount(likesCount - 1) : setLikesCount(likesCount + 1);
+        setLiked(!liked)
+        // let res = await postService.like(data);
+    };
+
+    const handleSave = async (_id) => {
+        let userId = context.user._id;
+        let data = {
+            _id: _id,
+            userId: userId
+        };
+
+        let res = await postService.save(data);
+        setSaved(!saved);
+        console.log(res);
+    };
+
+    const handleDelete = async (id) => {
+        console.log(id);
+        let res = await postService.deletePost(id);
+        console.log('delete', res);
+        setAnchorEl(null);
+    }
 
     return (
         <div>
@@ -91,42 +153,57 @@ export default function TransitionsModal(props) {
                         <div className={classes.paper}>
                             <Grid className={classes.root} container spacing={2} >
 
-                                <Grid item >
+                                <Grid item>
                                     <img className={classes.image} src={currentPost.imageUrl} />
                                 </Grid>
 
-                                <Grid item  >
+                                <Grid item>
                                     <Grid container justify="flex-start" className={classes.head} >
                                         <Grid item xs={2} >
                                             <Avatar src={currentPost.owner.profileImage} />
                                         </Grid>
 
-                                        <Grid item >
+                                        <Grid item xs={9}>
                                             <Typography variant="h5" >{currentPost.owner.username}</Typography>
                                         </Grid>
 
-                                        {/* <Grid item xs={1}>
-                                        <IconButton aria-label="delete" className={classes.margin} >
-                                            <MoreHorizIcon />
-                                        </IconButton>
-                                    </Grid> */}
+                                        <Grid item xs={1}>
+                                            <IconButton aria-label="delete" className={classes.margin} onClick={handleClick} >
+                                                <MoreHorizIcon />
+                                            </IconButton>
+                                            <Menu
+                                                id="long-menu"
+                                                anchorEl={anchorEl}
+                                                keepMounted
+                                                open={open}
+                                                onClose={handleClose}
+                                                PaperProps={{
+                                                    style: {
+                                                        maxHeight: ITEM_HEIGHT * 4.5,
+                                                        width: '20ch',
+                                                    },
+                                                }}
+                                            >
+                                                <MenuItem onClick={() => handleDelete(currentPost._id)}>
+                                                    Delete
+                                                </MenuItem>
+                                            </Menu>
+                                        </Grid>
                                     </Grid>
 
                                     <Grid container>
-                                        <NewComment comments={currentPost.comments} />
+                                        <NewComment ownerComment={currentPost} comments={currentPost.comments} />
                                     </Grid>
 
                                     <Grid container >
                                         <Grid>
-                                            <IconButton>
-                                                <Typography>{currentPost.usersLiked.length > 0 ? currentPost.usersLiked.length : ''}</Typography>
-                                                <FavoriteBorderRoundedIcon />
+                                            <IconButton aria-label="like" color="secondary" onClick={() => handleLike(currentPost._id)} >
+                                                <Typography>{likesCount}</Typography>
+                                                {liked ? (<FavoriteIcon />) : (<FavoriteBorderRoundedIcon />)}
                                             </IconButton>
-                                            <IconButton>
-                                                <ChatBubbleOutlineRoundedIcon />
-                                            </IconButton>
-                                            <IconButton>
-                                                <BookmarkBorderRoundedIcon />
+
+                                            <IconButton aria-label="save" onClick={() => handleSave(currentPost._id)}>
+                                                {saved ? (<BookmarkRoundedIcon />) : (<BookmarkBorderRoundedIcon />)}
                                             </IconButton>
                                         </Grid>
                                         <TextField
