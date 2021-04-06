@@ -65,6 +65,7 @@ export default function TransitionsModal(props) {
     const context = useContext(UserContext);
 
     const [currentPost, setcurrentPost] = useState(undefined);
+    const [isOwner, setIsOwner] = useState(false);
 
     const [likesCount, setLikesCount] = useState(0);
     const [liked, setLiked] = useState(false);
@@ -90,13 +91,12 @@ export default function TransitionsModal(props) {
             const data = await postService.getPost(post);
             console.log('data', data);
             setcurrentPost(data.result);
-            // setLikes(data.result.usersLiked);
             setLikesCount(data.result.usersLiked.length);
+            setIsOwner(data.result.owner._id == context.user._id ? true : false);
             const isSaved = data.result.usersSaved.some(x => x == context.user._id);
             const isLiked = data.result.usersLiked.some(x => x == context.user._id);
             setSaved(isSaved);
             setLiked(isLiked);
-            // console.log('likes', likes);
         };
 
         fetchData();
@@ -166,29 +166,30 @@ export default function TransitionsModal(props) {
                                         <Grid item xs={9}>
                                             <Typography variant="h5" >{currentPost.owner.username}</Typography>
                                         </Grid>
-
-                                        <Grid item xs={1}>
-                                            <IconButton aria-label="delete" className={classes.margin} onClick={handleClick} >
-                                                <MoreHorizIcon />
-                                            </IconButton>
-                                            <Menu
-                                                id="long-menu"
-                                                anchorEl={anchorEl}
-                                                keepMounted
-                                                open={open}
-                                                onClose={handleClose}
-                                                PaperProps={{
-                                                    style: {
-                                                        maxHeight: ITEM_HEIGHT * 4.5,
-                                                        width: '20ch',
-                                                    },
-                                                }}
-                                            >
-                                                <MenuItem onClick={() => handleDelete(currentPost._id)}>
-                                                    Delete
+                                        {isOwner ? (
+                                            <Grid item xs={1}>
+                                                <IconButton aria-label="delete" className={classes.margin} onClick={handleClick} >
+                                                    <MoreHorizIcon />
+                                                </IconButton>
+                                                <Menu
+                                                    id="long-menu"
+                                                    anchorEl={anchorEl}
+                                                    keepMounted
+                                                    open={open}
+                                                    onClose={handleClose}
+                                                    PaperProps={{
+                                                        style: {
+                                                            maxHeight: ITEM_HEIGHT * 4.5,
+                                                            width: '20ch',
+                                                        },
+                                                    }}
+                                                >
+                                                    <MenuItem onClick={() => handleDelete(currentPost._id)}>
+                                                        Delete
                                                 </MenuItem>
-                                            </Menu>
-                                        </Grid>
+                                                </Menu>
+                                            </Grid>
+                                        ) : ('')}
                                     </Grid>
 
                                     <Grid container>

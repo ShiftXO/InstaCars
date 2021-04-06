@@ -63,7 +63,7 @@ const useStyles = makeStyles((theme) => ({
 export default function Posts(props) {
     const classes = useStyles();
     const context = useContext(UserContext)
-    //console.log(props);
+    console.log(props);
     const [open, setOpen] = useState(false);
     const [post, setPost] = useState('');
     const [posts, setPosts] = useState([]);

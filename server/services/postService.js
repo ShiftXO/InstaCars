@@ -49,6 +49,22 @@ const likePost = async (data) => {
     return await post.save();
 };
 
+const likeComment = async (data) => {
+    const { _id, postId, userId } = data;
+
+    const comment = await Comment.findOne({ _id });
+    const user = await User.findOne({ _id: userId });
+
+    if (comment.usersLiked.includes(userId)) {
+        comment.usersLiked.remove(user);
+        return await comment.save();
+    }
+
+    comment.usersLiked.push(user);
+
+    return await comment.save();
+};
+
 const deletePost = async (data) => {
     const { id, user } = data;
 
@@ -99,4 +115,5 @@ module.exports = {
     likePost,
     addComment,
     deletePost,
+    likeComment,
 };

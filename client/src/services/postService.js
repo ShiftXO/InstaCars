@@ -27,6 +27,21 @@ async function like(data) {
         .catch(error => console.log(error));
 }
 
+async function likeComment(data) {
+    const { _id, postId } = data;
+    return await fetch(`http://localhost:5000/post/${postId}/comments/${_id}/like`, {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json',
+            'session': sessionStorage.getItem('session')
+        },
+        credentials: 'include',
+        body: JSON.stringify(data),
+    })
+        .then(res => res.json())
+        .catch(error => console.log(error));
+}
+
 async function save(data) {
     const { _id } = data;
     return await fetch(`http://localhost:5000/post/${_id}/save`, {
@@ -97,6 +112,7 @@ async function getPost(id) {
 export default {
     like,
     save,
+    likeComment,
     getAll,
     create,
     getPost,

@@ -26,8 +26,8 @@ export default function BasicTextFields(props) {
         let postId = props.postId
         let data = { postId, comment, userId }
 
-        //let res = await postService.addComment(data);
-        //console.log(res);
+        let res = await postService.addComment(data);
+        console.log(res);
         //setComments([comments, cm]);
         console.log('d', comments);
         //setComment('');

@@ -6,7 +6,7 @@ import { makeStyles } from '@material-ui/core/styles';
 
 import SignIn from './components/SignIn';
 import SignUp from './components/SignUp';
-import Card from "./components/Card";
+import Feed from "./components/Feed";
 import AppBar from "./components/AppBar";
 import UserPage from "./components/UserPage";
 import PostDetails from "./components/PostDetails"
@@ -45,9 +45,9 @@ function App() {
   }
 
   const logOut = async () => {
+    setUser(null);
     localStorage.clear();
     await authService.logOut();
-    setUser(null);
     history.push('/login');
     //setLoggedIn(false);
   }
@@ -57,14 +57,14 @@ function App() {
     <UserContext.Provider value={{ user, logIn, logOut, }}>
       <BrowserRouter>
         <Switch>
+          <Route path="/profile/:id" exact component={UserPage} />
+          <Route path="/profile/:id/saved" component={UserPage} />
           <Route path="/profile/:id/edit" exact component={EditPage} />
-
-          <Route path="/profile/:id" exact render={history => <UserPage {...history} />}></Route>
 
           <Route path="/" exact>
             {isLoggedIn ? (
               <Grid container direction={'column'} alignItems={'center'}>
-                <Card />
+                <Feed />
               </Grid>
             ) : (<Redirect to="/login" />)}
 
