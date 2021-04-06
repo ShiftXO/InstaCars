@@ -61,8 +61,8 @@ export default function RecipeReviewCard(props) {
     const classes = useStyles();
 
     const [post, setPost] = useState(props.post)
-    const a = props.post.comments;
-    const [comments, setComments] = useState(a);
+    const postComments = props.post.comments;
+    const [comments, setComments] = useState(postComments);
     console.log(comments);
 
     const [likes, setLikes] = useState(props.post.usersLiked);
@@ -102,11 +102,6 @@ export default function RecipeReviewCard(props) {
         setSaved(!saved);
         console.log(res);
     };
-
-    const handleChange = (value) => {
-        setComments(comments => [...comments, value]);
-        console.log('call', value);
-    }
 
     return (
         <Card className={classes.root} >
@@ -159,7 +154,7 @@ export default function RecipeReviewCard(props) {
             )}
 
             <Typography style={{ color: "gray", margin: "10px 20px" }}>{props.createdAt}</Typography>
-            <Comment postId={post._id} post={post} comments={comments} onChange={(value) => handleChange(value)} />
+            <Comment postId={post._id} post={post} comments={comments} setComments={setComments} />
         </Card>
     );
 }

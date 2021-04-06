@@ -40,7 +40,6 @@ export default function Comments(props) {
         isLiked ? setLikesCount(likesCount - 1) : setLikesCount(likesCount + 1);
         setIsLiked(!isLiked);
         let res = await postService.likeComment(data);
-        console.log(res);
     }
 
     return (
