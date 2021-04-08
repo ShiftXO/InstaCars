@@ -7,7 +7,6 @@ import CardHeader from '@material-ui/core/CardHeader';
 import CardMedia from '@material-ui/core/CardMedia';
 import CardContent from '@material-ui/core/CardContent';
 import CardActions from '@material-ui/core/CardActions';
-import Collapse from '@material-ui/core/Collapse';
 import Avatar from '@material-ui/core/Avatar';
 import IconButton from '@material-ui/core/IconButton';
 import Typography from '@material-ui/core/Typography';
@@ -16,17 +15,14 @@ import FavoriteBorderRoundedIcon from '@material-ui/icons/FavoriteBorderRounded'
 import FavoriteIcon from '@material-ui/icons/Favorite';
 import BookmarkBorderRoundedIcon from '@material-ui/icons/BookmarkBorderRounded';
 import BookmarkRoundedIcon from '@material-ui/icons/BookmarkRounded';
-import SendIcon from '@material-ui/icons/Send';
-import ExpandMoreIcon from '@material-ui/icons/ExpandMore';
 import MoreVertIcon from '@material-ui/icons/MoreVert';
-import { Button, Container, Grid } from '@material-ui/core';
 import UserContext from '../UserContext';
 
 import PostComments from './PostComment';
 import Comment from "./Comment";
 
 import postService from "../services/postService";
-import PrimarySearchAppBar from './AppBar';
+import moment from 'moment'
 
 const useStyles = makeStyles((theme) => ({
     root: {
@@ -63,7 +59,7 @@ export default function RecipeReviewCard(props) {
     const [post, setPost] = useState(props.post)
     const postComments = props.post.comments;
     const [comments, setComments] = useState(postComments);
-    console.log(comments);
+    const createdAt = moment(post.createdAt).fromNow();
 
     const [likes, setLikes] = useState(props.post.usersLiked);
     const [likesCount, setLikesCount] = useState(likes.length);
@@ -153,7 +149,7 @@ export default function RecipeReviewCard(props) {
                 <PostComments key={x._id} comment={x} />
             )}
 
-            <Typography style={{ color: "gray", margin: "10px 20px" }}>{props.createdAt}</Typography>
+            <Typography style={{ color: "gray", margin: "10px 20px" }}>{createdAt}</Typography>
             <Comment postId={post._id} post={post} comments={comments} setComments={setComments} />
         </Card>
     );

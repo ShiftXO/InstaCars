@@ -20,6 +20,7 @@ import Grid from '@material-ui/core/Grid';
 import Typography from '@material-ui/core/Typography';
 import UserContext from '../UserContext';
 import postService from '../services/postService';
+import moment from 'moment';
 
 const useStyles = makeStyles((theme) => ({
     root: {
@@ -37,6 +38,8 @@ export default function Comment(props) {
     const [comment, setComment] = useState(props.comment);
     const [likesCount, setLikesCount] = useState(props.comment.usersLiked.length);
     const [isLiked, setIsLiked] = useState(false);
+
+    const createdAt = moment(comment.createdAt).fromNow();
 
     useEffect(() => {
         const like = comment.usersLiked.some(x => x == context.user._id);
@@ -77,7 +80,8 @@ export default function Comment(props) {
                     </React.Fragment>
                 }
                 secondary={
-                    likesCount == 0 ? `10h` : likesCount > 1 ? `10h ${likesCount} likes` : `10h ${likesCount}  like`
+                    (createdAt) +
+                    (likesCount == 0 ? `` : likesCount > 1 ? ` ${likesCount} likes` : ` ${likesCount}  like`)
                 }
             />
             <ListItemSecondaryAction>

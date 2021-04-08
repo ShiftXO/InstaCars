@@ -19,6 +19,7 @@ import Grid from '@material-ui/core/Grid';
 import Typography from '@material-ui/core/Typography';
 import FolderIcon from '@material-ui/icons/Folder';
 import DeleteIcon from '@material-ui/icons/Delete';
+import moment from 'moment';
 
 import Comment from './CommentSectionComment'
 
@@ -34,6 +35,7 @@ const useStyles = makeStyles((theme) => ({
 export default function InteractiveList(props) {
     const classes = useStyles();
     const history = useHistory();
+    const createdAt = moment(props.ownerComment.createdAt).fromNow();
     console.log('id', props);
 
     return (
@@ -58,7 +60,7 @@ export default function InteractiveList(props) {
                             </React.Fragment>
                         }
                         secondary={
-                            '10h'
+                            createdAt
                         }
                     />
                 </ListItem>
