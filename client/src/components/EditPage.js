@@ -14,6 +14,7 @@ import authService from '../services/authService';
 import ImageUpload from './ImageUpload';
 import config from '../config';
 import UserContext from '../UserContext';
+import Toaster from './Toaster';
 
 const useStyles = makeStyles((theme) => ({
     paper: {
@@ -35,11 +36,13 @@ const useStyles = makeStyles((theme) => ({
     },
 }));
 
-export default function SignUp(props) {
+export default function Edit(props) {
     const classes = useStyles();
     document.title = 'Edit profile ● Instacars';
     const history = useHistory();
     const context = useContext(UserContext);
+    const [errors, setErrors] = useState({});
+    const [toastOpen, setToastOpen] = useState(false);
 
     const [file, setFile] = useState(null);
     const [profileImage, setProfileImage] = useState(null);
@@ -51,6 +54,10 @@ export default function SignUp(props) {
 
     async function handleEdit(e) {
         e.preventDefault();
+
+        let errors = validate();
+        setErrors(errors);
+
         let userId = context.user._id;
         if (file) {
             let cloudinaryData = new FormData();
@@ -67,8 +74,33 @@ export default function SignUp(props) {
         }
 
         let res = await authService.edit({ email, fullName, profileImage, bio, username, userId });
-        console.log('hello');
+
         history.push('/');
+    }
+
+    const validate = () => {
+        const errors = {};
+        if (!email) {
+            errors.email = 'Required';
+        } else if (
+            !/^[A-Z0-9._%+-]+@[A-Z0-9.-]+\.[A-Z]{2,4}$/i.test(email)
+        ) {
+            errors.email = 'Invalid email address';
+        }
+
+        if (!fullName) {
+            errors.fullName = 'Required'
+        } else if (fullName.length < 4) {
+            errors.fullName = 'Full name lenght should be at least 4 digits long'
+        }
+
+        if (!username) {
+            errors.username = 'Required'
+        } else if (username.length < 4) {
+            errors.username = 'Username lenght should be at least 4 digits long'
+        }
+
+        return errors;
     }
 
     useEffect(() => {
@@ -110,6 +142,8 @@ export default function SignUp(props) {
                                 autoComplete="email"
                                 value={email}
                                 onChange={(e) => setEmail(e.target.value)}
+                                error={errors.email ? true : false}
+                                helperText={errors.email}
                             />
                         </Grid>
                         <Grid item xs={12}>
@@ -122,6 +156,8 @@ export default function SignUp(props) {
                                 label="Full Name"
                                 value={fullName}
                                 onChange={(e) => setFullName(e.target.value)}
+                                error={errors.fullName ? true : false}
+                                helperText={errors.fullName}
                             />
                         </Grid>
                         <Grid item xs={12}>
@@ -134,12 +170,13 @@ export default function SignUp(props) {
                                 label="Username"
                                 value={username}
                                 onChange={(e) => setUsername(e.target.value)}
+                                error={errors.username ? true : false}
+                                helperText={errors.username}
                             />
                         </Grid>
                         <Grid item xs={12}>
                             <TextField
                                 variant="outlined"
-                                required
                                 fullWidth
                                 label="Bio"
                                 type="text"

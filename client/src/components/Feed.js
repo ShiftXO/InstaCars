@@ -66,7 +66,7 @@ export default function RecipeReviewCard() {
     document.title = 'Instacars'
     useEffect(() => {
         const fetchData = async () => {
-            const data = await postService.getAll();
+            const data = await postService.getAll(context.user._id);
             console.log('card data', data);
             if (data.result) {
                 setPosts(data.result);

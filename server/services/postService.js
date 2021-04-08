@@ -16,17 +16,18 @@ const create = async (data) => {
     return await post.save();
 };
 
-const getAll = async (data) => {
-    const { imageUrl, userId, description } = data;
+const getAll = async (_id) => {
     //TODO get user followers posts
-    let posts = await Post.find().populate({ path: 'owner', select: 'username profileImage' }).populate({ path: 'comments', populate: { path: 'user' } }).lean();
+    let res = await User.findOne({ _id }).select('following').lean();
+    let followers = res.following;
+    let posts = await Post.find({ owner: { $in: followers } }).populate({ path: 'comments owner' }).lean();
+    //let posts = await Post.find().populate({ path: 'owner', select: 'username profileImage' }).populate({ path: 'comments', populate: { path: 'user' } }).lean();
     //console.log(posts);
 
     return posts;
 };
 
 const getById = async (id) => {
-    //TODO get user followers posts
     let posts = await Post.findOne({ _id: id }).populate({ path: 'owner', select: 'username profileImage' }).populate({ path: 'comments', populate: { path: 'user profileImage' } }).lean();
     console.log(posts);
 
@@ -80,7 +81,7 @@ const savePost = async (data) => {
     const user = await User.findOne({ _id: userId });
     const post = await Post.findOne({ _id });
 
-    let isSaved = post.usersSaved.some(x => x._id == _id);
+    let isSaved = post.usersSaved.some(x => x._id == userId);
     if (isSaved) {
         await post.usersSaved.remove(user)
         await user.savedPosts.remove(post);

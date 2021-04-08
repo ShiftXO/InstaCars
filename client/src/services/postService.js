@@ -57,15 +57,14 @@ async function save(data) {
         .catch(error => console.log(error));
 }
 
-async function getAll(data) {
-    return await fetch('http://localhost:5000/post/all', {
+async function getAll(id) {
+    return await fetch(`http://localhost:5000/post/${id}/all`, {
         method: 'GET',
         headers: {
             'Content-Type': 'application/json',
             'session': sessionStorage.getItem('session')
         },
         credentials: 'include',
-        body: JSON.stringify(data),
     })
         .then(res => res.json())
         .catch(error => console.log(error));

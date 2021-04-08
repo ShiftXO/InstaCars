@@ -39,7 +39,8 @@ const useStyles = makeStyles((theme) => ({
         textAlign: 'center',
     },
     successIcon: {
-        color: "green"
+        color: "green",
+        textAlign: 'center'
     }
 }));
 
@@ -71,9 +72,9 @@ export default function TransitionsModal(props) {
         let imageUrl = image.secure_url;
 
         console.log(description, imageUrl, userId);
-        let result = await postService.create({ description, imageUrl, userId });
-        console.log(result);
-        if (imageUrl && result._id) {
+        let response = await postService.create({ description, imageUrl, userId });
+        console.log(response);
+        if (imageUrl && response.result._id) {
             setLoading(false);
             setIsSubmited(false);
             setDescription('');
