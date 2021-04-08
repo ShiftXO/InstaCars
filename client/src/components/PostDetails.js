@@ -22,7 +22,8 @@ import BookmarkRoundedIcon from '@material-ui/icons/BookmarkRounded';
 import ChatBubbleOutlineRoundedIcon from '@material-ui/icons/ChatBubbleOutlineRounded';
 import SendRoundedIcon from '@material-ui/icons/SendRounded';
 
-import NewComment from "./NewComment";
+import CommentSection from "./CommentSection";
+import Comment from './Comment';
 import postService from '../services/postService';
 import UserContext from '../UserContext';
 
@@ -65,6 +66,7 @@ export default function TransitionsModal(props) {
     const context = useContext(UserContext);
 
     const [currentPost, setcurrentPost] = useState(undefined);
+    const [comments, setComments] = useState([]);
     const [isOwner, setIsOwner] = useState(false);
 
     const [likesCount, setLikesCount] = useState(0);
@@ -91,6 +93,7 @@ export default function TransitionsModal(props) {
             const data = await postService.getPost(post);
             console.log('data', data);
             setcurrentPost(data.result);
+            setComments(data.result.comments);
             setLikesCount(data.result.usersLiked.length);
             setIsOwner(data.result.owner._id == context.user._id ? true : false);
             const isSaved = data.result.usersSaved.some(x => x == context.user._id);
@@ -193,7 +196,7 @@ export default function TransitionsModal(props) {
                                     </Grid>
 
                                     <Grid container>
-                                        <NewComment ownerComment={currentPost} comments={currentPost.comments} />
+                                        <CommentSection ownerComment={currentPost} comments={comments} />
                                     </Grid>
 
                                     <Grid container >
@@ -207,11 +210,10 @@ export default function TransitionsModal(props) {
                                                 {saved ? (<BookmarkRoundedIcon />) : (<BookmarkBorderRoundedIcon />)}
                                             </IconButton>
                                         </Grid>
-                                        <TextField
-                                            label="Add a comment..."
-                                            fullWidth
-                                            InputProps={{ endAdornment: <Button color="primary" type="submit">Post</Button> }}
-                                        />
+
+                                        <Grid item xs={12}>
+                                            <Comment postId={currentPost._id} post={currentPost} comments={comments} setComments={setComments} />
+                                        </Grid>
                                     </Grid>
                                 </Grid>
                             </Grid>

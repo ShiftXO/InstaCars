@@ -31,10 +31,11 @@ export default function BasicTextFields(props) {
     };
 
     return (
-        <form className={classes.root} noValidate autoComplete="off" onSubmit={(e) => handleSubmit(e)}>
+        <form noValidate autoComplete="off" onSubmit={(e) => handleSubmit(e)}>
             <TextField
                 label="Add a comment..."
                 value={comment}
+                fullWidth
                 onChange={(e) => setComment(e.target.value)}
                 InputProps={{ endAdornment: <Button color="primary" type="submit">Post</Button> }}
             />
