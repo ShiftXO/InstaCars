@@ -20,7 +20,7 @@ const getAll = async (_id) => {
     //TODO get user followers posts
     let res = await User.findOne({ _id }).select('following').lean();
     let followers = res.following;
-    let posts = await Post.find({ owner: { $in: followers } }).populate({ path: 'comments owner' }).lean();
+    let posts = await Post.find({ owner: { $in: followers } }).populate({ path: 'owner', select: 'username profileImage' }).populate({ path: 'comments', populate: { path: 'user' } }).lean();
     //let posts = await Post.find().populate({ path: 'owner', select: 'username profileImage' }).populate({ path: 'comments', populate: { path: 'user' } }).lean();
     //console.log(posts);
 
