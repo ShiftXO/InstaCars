@@ -87,7 +87,6 @@ export default function TransitionsModal(props) {
 
     useEffect(() => {
         const fetchData = async ({ post } = props) => {
-            console.log(post);
             if (!post) return
 
             const data = await postService.getPost(post);

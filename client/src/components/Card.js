@@ -20,6 +20,7 @@ import UserContext from '../UserContext';
 
 import PostComments from './PostComment';
 import Comment from "./Comment";
+import Modal from './PostDetails'
 
 import postService from "../services/postService";
 import moment from 'moment'
@@ -57,6 +58,7 @@ export default function RecipeReviewCard(props) {
     const classes = useStyles();
 
     const [post, setPost] = useState(props.post)
+    const [postId, setPostId] = useState('')
     const postComments = props.post.comments;
     const [comments, setComments] = useState(postComments);
     const createdAt = moment(post.createdAt).fromNow();
@@ -99,58 +101,81 @@ export default function RecipeReviewCard(props) {
         console.log(res);
     };
 
+    const [open, setOpen] = useState(false);
+
+    const handleOpen = (id) => {
+        console.log('call', id);
+        setPostId(id)
+        setOpen(true);
+        //history.push(`/p/${id}`)
+    };
+
+    const handleClose = () => {
+        setPostId('');
+        setOpen(false);
+        //history.back()
+    };
+
     return (
-        <Card className={classes.root} >
-            <CardHeader className={classes.cardHeader}
-                avatar={
-                    <Avatar aria-label="recipe" className={classes.avatar} src={post.owner.profileImage} />
-                }
-                action={
-                    <IconButton aria-label="settings">
-                        <MoreVertIcon />
+        <>
+            <Card className={classes.root} >
+                <CardHeader className={classes.cardHeader}
+                    avatar={
+                        <Avatar aria-label="recipe" className={classes.avatar} src={post.owner.profileImage} />
+                    }
+                    action={
+                        <IconButton aria-label="settings">
+                            <MoreVertIcon />
+                        </IconButton>
+                    }
+                    title={
+                        <Link to={`/profile/${post.owner._id}`}>
+                            <Typography color="inherit">{post.owner.username}</Typography>
+                        </Link>
+                    }
+                />
+
+                <CardMedia className={classes.media} image={post.imageUrl} onDoubleClick={() => handleLike(post._id)} />
+
+                <CardContent>
+                    <Typography component="span">{post.owner.username} </Typography>
+                    <Typography variant="body2" color="textSecondary" component="span">{post.description}</Typography>
+                    <Typography onClick={() => handleOpen(post._id)}>
+                        Show more
+                    </Typography>
+                </CardContent>
+
+                <CardActions disableSpacing>
+                    <IconButton aria-label="like" color="secondary" onClick={() => handleLike(post._id)} >
+                        <Typography>{likesCount > 0 ? likesCount : 0}</Typography>
+                        {liked ? (<FavoriteIcon />) : (<FavoriteBorderRoundedIcon />)}
                     </IconButton>
-                }
-                title={
-                    <Link to={`/profile/${post.owner._id}`}>
-                        <Typography color="inherit">{post.owner.username}</Typography>
-                    </Link>
-                }
-            />
-
-            <CardMedia className={classes.media} image={post.imageUrl} onDoubleClick={() => handleLike(post._id)} />
-
-            <CardContent>
-                <Typography component="span">{post.owner.username} </Typography>
-                <Typography variant="body2" color="textSecondary" component="span">{post.description}</Typography>
-                <Typography>Show more</Typography>
-            </CardContent>
-
-            <CardActions disableSpacing>
-                <IconButton aria-label="like" color="secondary" onClick={() => handleLike(post._id)} >
-                    <Typography>{likesCount > 0 ? likesCount : 0}</Typography>
-                    {liked ? (<FavoriteIcon />) : (<FavoriteBorderRoundedIcon />)}
-                </IconButton>
-                <IconButton aria-label="save" onClick={() => handleSave(post._id)}>
-                    {saved ? (<BookmarkRoundedIcon />) : (<BookmarkBorderRoundedIcon />)}
-                </IconButton>
-                <IconButton
-                    className={clsx(classes.expand, {
-                        [classes.expandOpen]: expanded,
-                    })}
-                    onClick={handleExpandClick}
-                    aria-expanded={expanded}
-                    aria-label="show more"
-                >
-                </IconButton>
-            </CardActions>
+                    <IconButton aria-label="save" onClick={() => handleSave(post._id)}>
+                        {saved ? (<BookmarkRoundedIcon />) : (<BookmarkBorderRoundedIcon />)}
+                    </IconButton>
+                    <IconButton
+                        className={clsx(classes.expand, {
+                            [classes.expandOpen]: expanded,
+                        })}
+                        onClick={handleExpandClick}
+                        aria-expanded={expanded}
+                        aria-label="show more"
+                    >
+                    </IconButton>
+                </CardActions>
 
 
-            {comments.map(x =>
-                <PostComments key={x._id} comment={x} />
-            )}
+                {comments.map(x =>
+                    <PostComments key={x._id} comment={x} />
+                )}
 
-            <Typography style={{ color: "gray", margin: "10px 20px" }}>{createdAt}</Typography>
-            <Comment postId={post._id} post={post} comments={comments} setComments={setComments} />
-        </Card>
+                <Typography style={{ color: "gray", margin: "10px 20px" }}>{createdAt}</Typography>
+                <Comment postId={post._id} post={post} comments={comments} setComments={setComments} />
+            </Card>
+
+            {postId ? (
+                <Modal handleOpen={handleOpen} handleClose={handleClose} open={open} post={postId} />
+            ) : ''}
+        </>
     );
 }
