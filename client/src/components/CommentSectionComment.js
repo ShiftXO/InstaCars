@@ -34,7 +34,6 @@ const useStyles = makeStyles((theme) => ({
 export default function Comment(props) {
     const classes = useStyles();
     const context = useContext(UserContext);
-    console.log('id', props);
     const [comment, setComment] = useState(props.comment);
     const [likesCount, setLikesCount] = useState(props.comment.usersLiked.length);
     const [isLiked, setIsLiked] = useState(false);
