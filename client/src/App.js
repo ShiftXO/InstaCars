@@ -60,6 +60,7 @@ function App() {
           <Route path="/profile/:id" exact component={UserPage} />
           <Route path="/profile/:id/saved" component={UserPage} />
           <Route path="/profile/:id/edit" exact component={EditPage} />
+          <Route path="/p/:id" component={PostDetails} />
 
           <Route path="/" exact>
             {isLoggedIn ? (

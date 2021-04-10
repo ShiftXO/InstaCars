@@ -12,7 +12,7 @@ router.post('/login', async (req, res, next) => {
         res.cookie(config.COOKIE_NAME, token.token, { httpOnly: true }).json({ user });
     } catch (error) {
         console.log(error);
-        return json(error);
+        res.json({ error });
     }
 });
 

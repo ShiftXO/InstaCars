@@ -178,7 +178,7 @@ export default function PrimarySearchAppBar() {
             </MenuItem>
             <MenuItem>
                 <IconButton aria-label="show 4 new mails" color="inherit">
-                    <Badge badgeContent={4} color="secondary">
+                    <Badge color="secondary">
                         <HomeIcon />
                     </Badge>
                 </IconButton>
@@ -186,7 +186,7 @@ export default function PrimarySearchAppBar() {
             </MenuItem>
             <MenuItem>
                 <IconButton aria-label="show 11 new notifications" color="inherit">
-                    <Badge badgeContent={11} color="secondary">
+                    <Badge color="secondary">
                         <SendIcon />
                     </Badge>
                 </IconButton>
@@ -243,14 +243,14 @@ export default function PrimarySearchAppBar() {
                             <AddIcon />
                         </IconButton>
                         <IconButton aria-label="show 4 new mails" color="inherit">
-                            <Badge badgeContent={4} color="secondary">
+                            <Badge color="secondary">
                                 <Link to="/" className={classes.link}>
                                     <HomeIcon />
                                 </Link>
                             </Badge>
                         </IconButton>
                         <IconButton aria-label="show 17 new notifications" color="inherit">
-                            <Badge badgeContent={17} color="secondary">
+                            <Badge color="secondary">
                                 <Link to="/inbox" className={classes.link}>
                                     <SendIcon />
                                 </Link>
