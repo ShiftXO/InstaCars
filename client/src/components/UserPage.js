@@ -130,15 +130,14 @@ export default function UserPage({ ...props }) {
 
     const handleDelete = async () => {
         let userId = context.user._id;
-        //let res = await authService.deleteUser(userId);
+        let res = await authService.deleteUser(userId);
         context.logOut();
     }
 
     const handleEdit = async () => {
         let userId = context.user._id;
         history.push(`/profile/${userId}/edit`);
-        //let res = await authService.deleteUser(userId);
-        //context.logOut();
+        let res = await authService.edit(userId);
     }
 
     return (
@@ -203,7 +202,7 @@ export default function UserPage({ ...props }) {
                                     </Grid>
                                 </Grid>
                                 <Grid container item>
-                                    <Typography>Lorem ipsum dolor sit amet, consectetur adipiscing elit.</Typography>
+                                    <Typography>{user.bio}</Typography>
                                 </Grid>
                             </Grid>
                         </Grid>

@@ -72,6 +72,14 @@ const followUser = async (users) => {
     let user = await User.findOne({ _id: userId });
     let followedUser = await User.findOne({ _id: followedUserId });
 
+    let isFollowed = followedUser.followers.some(x => x == userId);
+    if (isFollowed) {
+        followedUser.followers.remove(user);
+        user.following.remove(followedUser);
+        await followedUser.save();
+        return await user.save();
+    }
+
     followedUser.followers.push(user);
     user.following.push(followedUser);
 

@@ -57,6 +57,7 @@ export default function Edit(props) {
 
         let errors = validate();
         setErrors(errors);
+        let imageUrl = '';
 
         let userId = context.user._id;
         if (file) {
@@ -70,12 +71,19 @@ export default function Edit(props) {
             });
 
             let image = await cloudinaryResponse.json();
-            setProfileImage(image.secure_url);
+            imageUrl = image.secure_url;
         }
 
-        let res = await authService.edit({ email, fullName, profileImage, bio, username, userId });
+        if (Object.keys(errors).length == 0) {
+            if (imageUrl) {
+                let res = await authService.edit({ email, fullName, profileImage: imageUrl, bio, username, userId });
+            } else {
+                let res = await authService.edit({ email, fullName, profileImage, bio, username, userId });
+            }
+        }
 
-        history.push('/');
+
+        //history.push('/');
     }
 
     const validate = () => {

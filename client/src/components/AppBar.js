@@ -150,7 +150,7 @@ export default function PrimarySearchAppBar() {
             open={isMenuOpen}
             onClose={handleMenuClose}
         >
-            <Link to={`/profile/${context.user._id}`} className={classes.navLink}>
+            <Link to={`/profile/${context?.user?._id}`} className={classes.navLink}>
                 <MenuItem>
                     Profile
                 </MenuItem>
@@ -201,7 +201,7 @@ export default function PrimarySearchAppBar() {
                 >
                     <AccountCircle />
                 </IconButton>
-                <Link to={`/profile/${context.user._id}`}>Profile</Link>
+                <Link to={`/profile/${context.user?._id}`}>Profile</Link>
             </MenuItem>
         </Menu>
     );

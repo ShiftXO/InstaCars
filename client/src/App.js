@@ -45,9 +45,9 @@ function App() {
   }
 
   const logOut = async () => {
-    setUser(null);
     localStorage.clear();
     await authService.logOut();
+    setUser(null);
     history.push('/login');
     //setLoggedIn(false);
   }

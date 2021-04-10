@@ -10,6 +10,7 @@ import LockOutlinedIcon from '@material-ui/icons/LockOutlined';
 import Typography from '@material-ui/core/Typography';
 import { makeStyles } from '@material-ui/core/styles';
 import Container from '@material-ui/core/Container';
+import Toaster from './Toaster';
 
 import authService from '../services/authService';
 import ImageUpload from './ImageUpload';
@@ -55,30 +56,45 @@ export default function SignUp() {
     const [errors, setErrors] = useState({});
 
     const [file, setFile] = useState();
+    //const [imageUrl, setImageUrl] = useState('');
     const [email, setEmail] = useState('');
     const [fullName, setFullName] = useState('');
     const [username, setUsername] = useState('');
     const [password, setPassword] = useState('');
 
+    const [open, setOpen] = useState(false);
+    const [message, setMessage] = useState('');
+
     async function handleRegister(e) {
         e.preventDefault();
         let errors = validate();
         setErrors(errors);
-        console.log(errors);
-        let cloudinaryData = new FormData();
-        cloudinaryData.append('upload_preset', config.CLAUDINARY_PRESET_NAME);
-        cloudinaryData.append('file', file);
+        let imageUrl = '';
 
-        let cloudinaryResponse = await fetch(`${config.CLAUDINARY_API_URL}/image/upload`, {
-            method: 'POST',
-            body: cloudinaryData,
-        });
+        if (file) {
+            let cloudinaryData = new FormData();
+            cloudinaryData.append('upload_preset', config.CLAUDINARY_PRESET_NAME);
+            cloudinaryData.append('file', file);
 
-        let image = await cloudinaryResponse.json();
-        let imageUrl = image.secure_url;
+            let cloudinaryResponse = await fetch(`${config.CLAUDINARY_API_URL}/image/upload`, {
+                method: 'POST',
+                body: cloudinaryData,
+            });
 
-        let res = await authService.register({ email, fullName, imageUrl, username, password });
-        history.push('/');
+            let image = await cloudinaryResponse.json();
+            imageUrl = image.secure_url;
+        }
+
+        if (Object.keys(errors).length == 0) {
+            let res = await authService.register({ email, fullName, imageUrl, username, password });
+            if (res.error) {
+                let errorObj = { ...res.error }
+                setMessage(errorObj.message)
+                setOpen(true);
+            } else {
+                history.push('/');
+            }
+        }
     }
 
     const validate = () => {
@@ -117,6 +133,9 @@ export default function SignUp() {
     return (
         <Container component="main" maxWidth="xs">
             <CssBaseline />
+            {open ? (
+                <Toaster open={open} type={'error'} message={message} setOpen={setOpen} />
+            ) : ('')}
             <div className={classes.paper}>
                 <Avatar className={classes.avatar}>
                     <LockOutlinedIcon />

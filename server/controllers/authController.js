@@ -21,10 +21,10 @@ router.post('/register', async (req, res) => {
     try {
         let result = await authService.register(req.body);
         // console.log(result);
-        return json(result);
+        res.json({ result });
     } catch (error) {
         console.log(error);
-        return json(error);
+        res.json(error);
     }
 });
 
@@ -53,10 +53,10 @@ router.post('/:id/edit', auth, async (req, res, next) => {
 
         let result = await authService.editUser(data);
         // console.log(result);
-        return json(result);
+        res.json(result);
     } catch (error) {
         console.log(error);
-        return json(error);
+        res.json(error);
     }
 });
 
@@ -70,10 +70,10 @@ router.post('/:_id/delete', auth, async (req, res) => {
 
         let result = await authService.deleteUser(data);
         // console.log(result);
-        return json(result);
+        res.json(result);
     } catch (error) {
         console.log(error);
-        return json(error);
+        res.json(error);
     }
 });
 
