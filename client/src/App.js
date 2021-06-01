@@ -15,6 +15,7 @@ import UserContext from './UserContext';
 
 import authService from './services/authService';
 import EditPage from './components/EditPage';
+import Chat from './components/Chat';
 
 function App() {
   const useStyles = makeStyles((theme) => ({
@@ -60,6 +61,9 @@ function App() {
           <Route path="/profile/:id/saved" component={UserPage} />
           <Route path="/profile/:id/edit" exact component={EditPage} />
           <Route path="/p/:id" component={PostDetails} />
+
+          <Route path="/inbox" exact component={Chat} />
+
 
           <Route path="/" exact>
             {isLoggedIn ? (

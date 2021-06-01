@@ -63,6 +63,7 @@ const useStyles = makeStyles((theme) => ({
 
 export default function SignInSide(props) {
     const classes = useStyles();
+    document.title = 'Log in'
     const history = useHistory();
     const context = useContext(UserContext)
     const [email, setEmail] = useState('');

@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useContext } from 'react';
+import React, { useState, useEffect, useContext, useRef } from 'react';
 import { makeStyles } from '@material-ui/core/styles';
 import Paper from '@material-ui/core/Paper';
 import Grid from '@material-ui/core/Grid';
@@ -17,11 +17,12 @@ import io from "socket.io-client";
 import { Button } from '@material-ui/core';
 
 import UserContext from '.././UserContext';
+import Conversation from '../components/Conversation';
 
 import authService from '../services/authService';
 import Messages from './Messages';
+import chatService from '../services/chatService';
 
-let socket;
 const useStyles = makeStyles({
     table: {
         minWidth: 650,
@@ -58,136 +59,113 @@ const Chat = () => {
     const classes = useStyles();
     const context = useContext(UserContext);
 
-    const [name, setName] = useState('');
-    const [room, setRoom] = useState('');
-
+    const { user } = useContext(UserContext);
     const [users, setUsers] = useState([]);
-
-    const [message, setMessage] = useState('');
+    const [conversations, setConversations] = useState([]);
+    const [currentChat, setCurrentChat] = useState(null);
     const [messages, setMessages] = useState([]);
+    const [newMessage, setNewMessage] = useState("");
+    const [arrivalMessage, setArrivalMessage] = useState(null);
+    const [onlineUsers, setOnlineUsers] = useState([]);
+    const socket = useRef();
+    const scrollRef = useRef();
 
-    function receivedMessage(message) {
-        setMessages(oldMsgs => [...oldMsgs, message]);
-    }
+    // useEffect(async () => {
+    //     let res = await chatService.getConversationsTwo();
+    //     console.log(res);
+    // }, []);
 
     useEffect(async () => {
-        socket = io('http://localhost:5000');
-        console.log('here');
-
-        // let data = await authService.getUsers();
-        // if (data.result) {
-        //     console.log(data.result);
-        //     setUsers(data.result)
-        // }
+        socket.current = io("localhost:5000");
+        socket.current.on("getMessage", (data) => {
+            setArrivalMessage({
+                sender: data.senderId,
+                text: data.text,
+                createdAt: Date.now(),
+            });
+        });
     }, []);
 
     useEffect(() => {
-        //setName(context.user._id)
-        //socket.emit('register', context.user.username);
-        // socket.on("user connected", (user) => {
-        //     console.log(user);
-        //     //initReactiveProperties(user);
-        //     setUsers(oldState => [...oldState, users])
-        // });
-
-        socket.on("users", (users) => {
-            users.forEach((user) => {
-                user.self = user.userID === socket.id;
-                //initReactiveProperties(user);
-            });
-
-            setUsers(oldState => [...oldState, users])
-        });
-
-        // socket.emit('join', { name, room }, (msg) => {
-        //     console.log(msg);
-        //     setMessages(msg);
-        // });
-
-        // socket.on('message', (msg) => {
-        //     console.log('return msg', msg.message);
-        //     console.log('msgesss', messages);
-        //     receivedMessage(msg.message)
-        // });
-        socket.on("private message", ({ content, from }) => {
-            for (let i = 0; i < users.length; i++) {
-                const user = users[i];
-                if (user.userID === from) {
-                    messages.push({
-                        content,
-                        fromSelf: false,
-                    });
-                    // if (user !== this.selectedUser) {
-                    //   user.hasNewMessages = true;
-                    // }
-                    break;
-                }
-            }
-        });
-
-        socket.on("connect", () => {
-            users.forEach((user) => {
-                if (user.self) {
-                    user.connected = true;
-                }
-            });
-        });
-
-        socket.on("disconnect", () => {
-            users.forEach((user) => {
-                if (user.self) {
-                    user.connected = false;
-                }
-            });
-        });
-
-        return () => {
-            socket.emit('leave');
-            socket.off();
+        if (arrivalMessage && currentChat?.members.includes(arrivalMessage.sender)) {
+            setMessages(msg => [...msg, arrivalMessage]);
+            console.log(messages);
         }
-    }, [room]);
-
-    //refresh after getting message
-    //  useEffect(() => {
-    //      socket.on('message', (msg) => {
-    //          console.log('return msg', msg.message);
-    //          receivedMessage(msg.message)
-    //      });
-    //  }, [messages]);
+        // arrivalMessage &&
+        //     currentChat?.members.includes(arrivalMessage.sender) &&
+        //     setMessages(arr => [...arr, arrivalMessage]);
+    }, [arrivalMessage, currentChat]);
 
     useEffect(() => {
-        socket.on('users', (users) => {
-            users.forEach((user) => {
-                user.self = user.userID === socket.id;
-                //initReactiveProperties(user);
-            });
+        socket.current.emit("addUser", user._id);
+        socket.current.on("getUsers", (users) => {
+            setOnlineUsers(
+                user.following.filter((f) => users.some((u) => u.userId === f))
+            );
         });
-    }, [users]);
 
-    const sendMessage = (e) => {
+    }, [user]);
+
+    useEffect(() => {
+        const getConversations = async () => {
+            try {
+                const res = await chatService.getConversations(user._id);
+                setConversations(res);
+                console.log(conversations);
+            } catch (err) {
+                console.log(err);
+            }
+        };
+        getConversations();
+    }, []);
+
+    useEffect(() => {
+        const getMessages = async () => {
+            try {
+                const res = await chatService.getMessages(currentChat?._id);
+                console.log(res);
+                setMessages(res);
+            } catch (err) {
+                console.log(err);
+            }
+        };
+        getMessages();
+    }, [currentChat]);
+
+    const handleSubmit = async (e) => {
         e.preventDefault();
-        console.log(message);
-        socket.emit("private message", {
-            message,
-            to: name,
-        });
-        // this.selectedUser.messages.push({
-        //     content,
-        //     fromSelf: true,
-        //   });
-        // socket.emit('message', { message }, () => {
-        //     setMessages([...messages, message]);
-        // });
-        setMessage('')
-    }
+        if (newMessage == '') return
+        const message = {
+            sender: user._id,
+            text: newMessage,
+            conversationId: currentChat._id,
+        };
 
-    const changeChat = (userId) => {
-        setRoom(userId);
-        console.log(userId);
-    }
-    console.log(users);
+        const receiverId = currentChat.members.find(
+            (member) => member !== user._id
+        );
+
+        socket.current.emit("sendMessage", {
+            senderId: user._id,
+            receiverId,
+            text: newMessage,
+        });
+
+        try {
+            const res = await chatService.sendMessage(message);
+            setMessages([...messages, res]);
+            setNewMessage("");
+        } catch (err) {
+            console.log(err);
+        }
+    };
+
+    useEffect(() => {
+        scrollRef.current?.scrollIntoView({ behavior: "smooth" });
+    }, [messages]);
+
     return (
-        <div>
+        <>
             <Grid container component={Paper} className={classes.chatSection}>
                 <Grid item xs={3} className={classes.borderRight500}>
                     <List>
@@ -204,38 +182,35 @@ const Chat = () => {
                     </Grid>
                     <Divider />
                     <List>
-                        <>
-                            {users.map(x =>
-                                <ListItem button key={x._id} onClick={() => changeChat(x._id)}>
-                                    <ListItemIcon>
-                                        <Avatar alt={x.username} src="https://content.api.news/v3/images/bin/a6923adbc7bece73803221613f410782" />
-                                    </ListItemIcon>
-                                    <ListItemText primary={x.username}></ListItemText>
-                                    <ListItemText secondary={x.connected ? 'online' : 'offline'} align="right"></ListItemText>
-                                </ListItem>
-                            )}
-                        </>
-
+                        {conversations.map(x => {
+                            return <div onClick={() => setCurrentChat(x)}>
+                                <Conversation conversation={x} currentUser={user} />
+                            </div>
+                        })}
                     </List>
                 </Grid>
                 <Grid item xs={9}>
                     <List className={classes.messageArea}>
-                        <Messages messages={messages} />
+                        {messages.map((m) => (
+                            <div ref={scrollRef}>
+                                <Messages message={m} own={m.sender === user._id} />
+                            </div>
+                        ))}
                     </List>
                     <Divider />
-                    <form onSubmit={(e) => sendMessage(e)}>
+                    <form onSubmit={(e) => handleSubmit(e)}>
                         <Grid container style={{ padding: '20px' }}>
                             <Grid item xs={11}>
-                                <TextField id="outlined-basic-email" label="Type Something" fullWidth value={message} onChange={(e) => setMessage(e.target.value)} />
+                                <TextField label="Type Something" fullWidth value={newMessage} onChange={(e) => setNewMessage(e.target.value)} />
                             </Grid>
                             <Grid xs={1} align="right">
-                                <Fab onClick={(e) => sendMessage(e)} color="primary" aria-label="add"><SendIcon /></Fab>
+                                <Fab color="primary" aria-label="add" onClick={(e) => handleSubmit(e)}><SendIcon /></Fab>
                             </Grid>
                         </Grid>
                     </form>
                 </Grid>
             </Grid>
-        </div>
+        </>
     );
 }
 
