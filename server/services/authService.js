@@ -33,6 +33,7 @@ const login = async (data) => {
             _id: user._id,
             username: user.username,
             profileImage: user.profileImage,
+            following: user.following,
         },
         token
     }
