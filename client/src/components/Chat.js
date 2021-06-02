@@ -18,6 +18,7 @@ import Conversation from '../components/Conversation';
 import authService from '../services/authService';
 import Messages from './Messages';
 import chatService from '../services/chatService';
+import { Typography } from '@material-ui/core';
 
 const useStyles = makeStyles({
     table: {
@@ -186,24 +187,32 @@ const Chat = () => {
                     </List>
                 </Grid>
                 <Grid item xs={9}>
-                    <List className={classes.messageArea}>
-                        {messages.map((m) => (
-                            <div ref={scrollRef}>
-                                <Messages message={m} own={m.sender === user._id} />
-                            </div>
-                        ))}
-                    </List>
-                    <Divider />
-                    <form onSubmit={(e) => handleSubmit(e)}>
-                        <Grid container style={{ padding: '20px' }}>
-                            <Grid item xs={11}>
-                                <TextField label="Type Something" fullWidth value={newMessage} onChange={(e) => setNewMessage(e.target.value)} />
-                            </Grid>
-                            <Grid xs={1} align="right">
-                                <Fab color="primary" aria-label="add" onClick={(e) => handleSubmit(e)}><SendIcon /></Fab>
-                            </Grid>
+                    {currentChat != null ? (
+                        <>
+                            <List className={classes.messageArea}>
+                                {messages.map((m) => (
+                                    <div ref={scrollRef}>
+                                        <Messages message={m} own={m.sender === user._id} />
+                                    </div>
+                                ))}
+                            </List>
+                            <Divider />
+                            <form onSubmit={(e) => handleSubmit(e)}>
+                                <Grid container style={{ padding: '20px' }}>
+                                    <Grid item xs={11}>
+                                        <TextField label="Type Something" fullWidth value={newMessage} onChange={(e) => setNewMessage(e.target.value)} />
+                                    </Grid>
+                                    <Grid xs={1} align="right">
+                                        <Fab color="primary" aria-label="add" onClick={(e) => handleSubmit(e)}><SendIcon /></Fab>
+                                    </Grid>
+                                </Grid>
+                            </form>
+                        </>
+                    ) : (
+                        <Grid style={{ fontSize: 25 }}>
+                            <span>Select Chat</span>
                         </Grid>
-                    </form>
+                    )}
                 </Grid>
             </Grid>
         </>
