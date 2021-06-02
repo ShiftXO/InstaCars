@@ -1,18 +1,3 @@
-async function like(data) {
-    const { _id } = data;
-    return await fetch(`http://localhost:5000/post/${_id}/like`, {
-        method: 'POST',
-        headers: {
-            'Content-Type': 'application/json',
-            'session': sessionStorage.getItem('session')
-        },
-        credentials: 'include',
-        body: JSON.stringify(data),
-    })
-        .then(res => res.json())
-        .catch(error => console.log(error));
-}
-
 async function getConversations(userId) {
     return await fetch(`http://localhost:5000/inbox/${userId}`, {
         method: 'GET',

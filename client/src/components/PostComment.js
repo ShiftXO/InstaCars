@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useContext } from "react";
+import React, { useState, useContext } from "react";
 import { Link } from 'react-router-dom';
 import { Grid, Typography, IconButton } from "@material-ui/core";
 import FavoriteBorderRoundedIcon from '@material-ui/icons/FavoriteBorderRounded';

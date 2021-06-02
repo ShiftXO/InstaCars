@@ -7,14 +7,9 @@ import Menu from '@material-ui/core/Menu';
 import MenuItem from '@material-ui/core/MenuItem';
 import MoreVertIcon from '@material-ui/icons/MoreVert';
 import IconButton from "@material-ui/core/IconButton";
-import InfoIcon from "@material-ui/icons/Info";
 import Avatar from '@material-ui/core/Avatar';
-import { Divider, Grid, GridList, GridListTile } from '@material-ui/core';
+import { Divider, Grid } from '@material-ui/core';
 import authService from '../services/authService';
-import { Link } from 'react-router-dom';
-import Modal from './PostDetails';
-
-import Paper from '@material-ui/core/Paper';
 import Tabs from '@material-ui/core/Tabs';
 import Tab from '@material-ui/core/Tab';
 

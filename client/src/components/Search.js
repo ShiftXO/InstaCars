@@ -1,8 +1,8 @@
 import React, { useEffect, useState, useRef } from 'react';
-import { Link, useHistory } from 'react-router-dom';
+import { Link } from 'react-router-dom';
 import TextField from '@material-ui/core/TextField';
 import { makeStyles } from '@material-ui/core/styles';
-import { Avatar, Grid, Input, List, ListItem, ListItemAvatar, ListItemText } from '@material-ui/core';
+import { Avatar, Grid, List, ListItem, ListItemAvatar, ListItemText } from '@material-ui/core';
 
 import authService from '../services/authService';
 
